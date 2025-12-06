@@ -170,3 +170,38 @@
     color: var(--text-muted);
     font-size: 0.875rem;
 }
+
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+}
+
+.sidebar-footer .btn {
+    width: 100%;
+    justify-content: center;
+}
+
+.sidebar.collapsed .sidebar-footer {
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.sidebar.collapsed .sidebar-footer .btn {
+    padding: 0.5rem;
+    width: auto;
+    font-size: 1.25rem;
+    /* Make the + larger or use an icon */
+}
+
+/* Hide text in collapsed mode if we don't switch to icon */
+.sidebar.collapsed .sidebar-footer .btn {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    /* For collapsed, maybe just show '+'? But the text is '+ New Connection' */
+    /* Let's just hide the text and show a plus icon if possible, or just let it shrink. */
+    /* Actually, user didn't ask for collapsed optimization, but good to handle. */
+    /* Simplest: content: '+' */
+}

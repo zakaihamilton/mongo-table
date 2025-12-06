@@ -216,9 +216,11 @@ export default function Sidebar() {
                         </div>
                     </div>
 
-                    <div className="sidebar-footer">
-                        <Link href="/" className="btn btn-sm btn-secondary">+ New Connection</Link>
-                    </div>
+                    {pathname !== '/' && (
+                        <div className="sidebar-footer">
+                            <Link href="/" className="btn btn-sm btn-secondary">+ New Connection</Link>
+                        </div>
+                    )}
                 </>
             )}
         </aside>
