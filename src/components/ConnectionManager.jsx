@@ -27,8 +27,8 @@ export default function ConnectionManager() {
   const handleAdd = async () => {
     setError('');
     if (!newUri) {
-        setError('URI is required');
-        return;
+      setError('URI is required');
+      return;
     }
     const name = newName || newUri.split('@')[1] || 'New Connection';
 
@@ -37,12 +37,12 @@ export default function ConnectionManager() {
     setLoading(false);
 
     if (result.success) {
-        const newConn = { name, uri: newUri };
-        saveConnections([...connections, newConn]);
-        setNewUri('');
-        setNewName('');
+      const newConn = { name, uri: newUri };
+      saveConnections([...connections, newConn]);
+      setNewUri('');
+      setNewName('');
     } else {
-        setError('Connection failed: ' + result.error);
+      setError('Connection failed: ' + result.error);
     }
   };
 
@@ -59,36 +59,43 @@ export default function ConnectionManager() {
   return (
     <div className="connection-manager">
       <h2>Connections</h2>
+
+      {error && <div className="error">{error}</div>}
+
       <div className="add-connection">
-        <input 
-          type="text" 
-          placeholder="MongoDB URI (mongodb://...)" 
-          value={newUri} 
+        <input
+          type="text"
+          placeholder="MongoDB URI (mongodb://...)"
+          value={newUri}
           onChange={(e) => setNewUri(e.target.value)}
         />
-        <input 
-          type="text" 
-          placeholder="Name (optional)" 
-          value={newName} 
+        <input
+          type="text"
+          placeholder="Name (optional)"
+          value={newName}
           onChange={(e) => setNewName(e.target.value)}
         />
-        <button onClick={handleAdd} disabled={loading}>
+        <button className="btn btn-primary" onClick={handleAdd} disabled={loading}>
           {loading ? 'Testing...' : 'Add Connection'}
         </button>
       </div>
-      {error && <p className="error">{error}</p>}
-      
+
       <div className="connection-list">
-        {connections.length === 0 && <p>No connections saved.</p>}
+        {connections.length === 0 && <p className="text-muted" style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No connections saved. Add one above.</p>}
         {connections.map((conn, idx) => (
           <div key={idx} className="connection-item">
             <div className="conn-info">
-                <strong>{conn.name}</strong>
-                <span className="conn-uri">{conn.uri}</span>
+              <span className="conn-name">{conn.name}</span>
+              <span className="conn-uri">{conn.uri}</span>
             </div>
-            <div className="conn-actions">
-                <button onClick={() => connect(conn.uri)}>Connect</button>
-                <button className="danger" onClick={() => handleRemove(idx)}>Remove</button>
+            <div className="conn-actions" style={{
+              marginTop: '1rem',
+              display: 'flex',
+              gap: '0.5rem',
+              justifyContent: 'flex-start'
+            }}>
+              <button className="btn btn-secondary" onClick={() => connect(conn.uri)}>Connect</button>
+              <button className="btn btn-danger" onClick={() => handleRemove(idx)}>Remove</button>
             </div>
           </div>
         ))}

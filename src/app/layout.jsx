@@ -5,10 +5,19 @@ export const metadata = {
   description: 'Browser for MongoDB',
 };
 
+import Sidebar from '@/components/Sidebar';
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <div className="app-shell">
+          <Sidebar />
+          <main className="main-content">
+            {children}
+          </main>
+        </div>
+      </body>
     </html>
   );
 }

@@ -8,7 +8,6 @@ export const metadata = {
 export default function Home() {
   return (
     <main>
-      <h1>Mongo Table</h1>
       <ConnectionManager />
     </main>
   );
