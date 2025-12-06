@@ -7,7 +7,10 @@ const ReactJson = dynamic(() => import('react-json-view'), { ssr: false });
 import './JsonViewModal.css';
 
 export default function JsonViewModal({ data, onClose }) {
+    const [theme, setTheme] = React.useState('dark');
+
     useEffect(() => {
+        // Sync body overflow
         if (data) {
             document.body.style.overflow = 'hidden';
         } else {
@@ -17,6 +20,26 @@ export default function JsonViewModal({ data, onClose }) {
             document.body.style.overflow = 'unset';
         };
     }, [data]);
+
+    useEffect(() => {
+        // Initial load
+        const stored = localStorage.getItem('theme');
+        if (stored) setTheme(stored);
+
+        // Listen for theme changes (dispatched by Sidebar)
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                    const newTheme = document.documentElement.getAttribute('data-theme');
+                    setTheme(newTheme || 'dark');
+                }
+            });
+        });
+
+        observer.observe(document.documentElement, { attributes: true });
+
+        return () => observer.disconnect();
+    }, []);
 
     if (!data) return null;
 
@@ -61,11 +84,11 @@ export default function JsonViewModal({ data, onClose }) {
                 </div>
                 <div
                     className="json-container"
-                    style={{ padding: '0', background: '#272822' }}
+                    style={{ padding: '0', background: 'var(--bg-primary)' }}
                 >
                     <ReactJson
                         src={data}
-                        theme="monokai"
+                        theme={theme === 'dark' ? 'monokai' : 'rjv-default'}
                         collapsed={1}
                         displayDataTypes={false}
                         style={{ padding: '1rem', background: 'transparent' }}
