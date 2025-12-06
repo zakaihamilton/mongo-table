@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState, use } from 'react';
-import { getDocuments, getAllDocuments } from '@/actions/mongo';
-import { useRouter } from 'next/navigation';
+import { getDocuments, getAllDocuments, getDocument } from '@/actions/mongo';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import JSZip from 'jszip';
 import CollectionHeader from '@/components/CollectionHeader';
 import CollectionTable from '@/components/CollectionTable';
@@ -12,6 +12,8 @@ import JsonViewModal from '@/components/JsonViewModal';
 export default function CollectionPage({ params }) {
     const { db: dbName, collection: colName } = use(params);
     const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
 
     const [documents, setDocuments] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -24,6 +26,42 @@ export default function CollectionPage({ params }) {
     const [query, setQuery] = useState('');
     const [isExporting, setIsExporting] = useState(false);
     const [selectedDoc, setSelectedDoc] = useState(null);
+
+    // Sync URL 'view' param with selectedDoc
+    useEffect(() => {
+        const viewId = searchParams.get('view');
+        if (viewId) {
+            // If already showing correct doc, do nothing
+            if (selectedDoc && selectedDoc._id === viewId) return;
+
+            // Fetch and show doc
+            const uri = localStorage.getItem('active_connection');
+            if (uri) {
+                getDocument(uri, dbName, colName, viewId)
+                    .then(doc => {
+                        if (doc) setSelectedDoc(doc);
+                    })
+                    .catch(console.error);
+            }
+        } else {
+            // If no param but doc is selected, close it (handle back button)
+            if (selectedDoc) setSelectedDoc(null);
+        }
+    }, [searchParams, dbName, colName]); // Removed selectedDoc from deps to avoid loop
+
+    const handleViewJson = (doc) => {
+        setSelectedDoc(doc);
+        const params = new URLSearchParams(searchParams);
+        params.set('view', doc._id);
+        router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    };
+
+    const handleCloseJson = () => {
+        setSelectedDoc(null);
+        const params = new URLSearchParams(searchParams);
+        params.delete('view');
+        router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    };
 
     useEffect(() => {
         const uri = localStorage.getItem('active_connection');
@@ -144,7 +182,7 @@ export default function CollectionPage({ params }) {
                             columns={columns}
                             sort={sort}
                             onSort={handleSort}
-                            onViewJson={setSelectedDoc}
+                            onViewJson={handleViewJson}
                         />
                     </>
                 )}
@@ -160,7 +198,7 @@ export default function CollectionPage({ params }) {
 
             <JsonViewModal
                 data={selectedDoc}
-                onClose={() => setSelectedDoc(null)}
+                onClose={handleCloseJson}
             />
         </div>
     );
