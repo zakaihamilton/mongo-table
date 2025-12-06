@@ -79,7 +79,7 @@ export default function Sidebar() {
             </div>
             {!isCollapsed && (
                 <>
-                    <div style={{ padding: '0 1rem 1rem 1rem' }}>
+                    <div style={{ padding: '1rem' }}>
                         <input
                             type="search"
                             placeholder="Filter..."
