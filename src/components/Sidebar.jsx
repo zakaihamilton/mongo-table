@@ -65,8 +65,8 @@ export default function Sidebar() {
             <div className="sidebar-header" style={{ display: 'flex', alignItems: 'center', justifyContent: isCollapsed ? 'center' : 'space-between', padding: '1.5rem', height: '70px' }}>
                 {!isCollapsed && (
                     <Link href="/" className="brand" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <img src="/app_icon.png" alt="Logo" style={{ width: '24px', height: '24px' }} />
-                        <span>MongoTable</span>
+                        <img src="/app_icon.png" alt="Logo" style={{ width: '40px', height: '40px', borderRadius: 'var(--radius-sm)' }} />
+                        <span style={{ fontSize: '1.5rem', letterSpacing: '-0.025em', fontWeight: 800 }}>Mongo Table</span>
                     </Link>
                 )}
                 <button onClick={toggleSidebar} className="sidebar-toggle">
