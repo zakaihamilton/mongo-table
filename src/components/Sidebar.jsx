@@ -14,7 +14,14 @@ export default function Sidebar() {
     const [term, setTerm] = useState('');
     const pathname = usePathname();
 
+    const [theme, setTheme] = useState('dark');
+
     useEffect(() => {
+        // Load theme from storage
+        const storedTheme = localStorage.getItem('theme') || 'dark';
+        setTheme(storedTheme);
+        document.documentElement.setAttribute('data-theme', storedTheme);
+
         // Load connections from local storage
         const stored = localStorage.getItem('mongo_connections');
         if (stored) {
@@ -29,6 +36,13 @@ export default function Sidebar() {
         window.addEventListener('storage', handleStorage);
         return () => window.removeEventListener('storage', handleStorage);
     }, []);
+
+    const toggleTheme = () => {
+        const newTheme = theme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+        document.documentElement.setAttribute('data-theme', newTheme);
+    };
 
     const toggleExpand = async (id, type, data) => {
         // data = { uri, dbName }
@@ -64,18 +78,29 @@ export default function Sidebar() {
         <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
             <div className="sidebar-header" style={{ display: 'flex', alignItems: 'center', justifyContent: isCollapsed ? 'center' : 'space-between', padding: '1.5rem', height: '70px' }}>
                 {!isCollapsed && (
-                    <Link href="/" className="brand" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <img src="/app_icon.png" alt="Logo" style={{ width: '40px', height: '40px', borderRadius: 'var(--radius-sm)' }} />
-                        <span style={{ fontSize: '1.5rem', letterSpacing: '-0.025em', fontWeight: 800 }}>Mongo Table</span>
+                    <Link href="/" className="brand" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: '0.5rem', marginRight: '0.5rem' }}>
+                        <img src="/app_icon.png" alt="Logo" style={{ width: '24px', height: '24px' }} />
+                        <span>MongoTable</span>
                     </Link>
                 )}
-                <button onClick={toggleSidebar} className="sidebar-toggle">
-                    {isCollapsed ? (
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    ) : (
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    {!isCollapsed && (
+                        <button onClick={toggleTheme} className="sidebar-toggle" title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}>
+                            {theme === 'dark' ? (
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg>
+                            ) : (
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+                            )}
+                        </button>
                     )}
-                </button>
+                    <button onClick={toggleSidebar} className="sidebar-toggle">
+                        {isCollapsed ? (
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        ) : (
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        )}
+                    </button>
+                </div>
             </div>
             {!isCollapsed && (
                 <>

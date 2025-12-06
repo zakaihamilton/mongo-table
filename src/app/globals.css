@@ -37,6 +37,26 @@
   --radius-lg: 0.75rem;
 }
 
+[data-theme='light'] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f1f5f9;
+  /* Slate 100 */
+  --bg-tertiary: #e2e8f0;
+  /* Slate 200 */
+
+  --text-primary: #0f172a;
+  /* Slate 900 */
+  --text-secondary: #475569;
+  /* Slate 600 */
+  --text-muted: #64748b;
+  /* Slate 500 */
+
+  --border-color: #e2e8f0;
+  /* Slate 200 */
+
+  --accent-text: #ffffff;
+}
+
 * {
   box-sizing: border-box;
 }
