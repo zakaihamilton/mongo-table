@@ -22,6 +22,7 @@ export default function ConnectionManager() {
   const saveConnections = (conns) => {
     setConnections(conns);
     localStorage.setItem('mongo_connections', JSON.stringify(conns));
+    window.dispatchEvent(new Event('storage'));
   };
 
   const handleAdd = async () => {
