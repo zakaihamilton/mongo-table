@@ -70,7 +70,11 @@ export default function Sidebar() {
                     </Link>
                 )}
                 <button onClick={toggleSidebar} className="sidebar-toggle">
-                    {isCollapsed ? '►' : '◄'}
+                    {isCollapsed ? (
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    ) : (
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    )}
                 </button>
             </div>
             {!isCollapsed && (
@@ -112,7 +116,13 @@ export default function Sidebar() {
                                             className="node-label"
                                             onClick={() => toggleExpand(connId, 'connection', { uri: conn.uri })}
                                         >
-                                            <span className="icon">{isExpanded(connId) || term ? '▼' : '▶'}</span>
+                                            <span className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                {isExpanded(connId) || term ? (
+                                                    <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                                ) : (
+                                                    <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                                )}
+                                            </span>
                                             <span className="text">{conn.name}</span>
                                         </div>
 
@@ -134,10 +144,15 @@ export default function Sidebar() {
                                                                 className="node-label"
                                                                 onClick={() => toggleExpand(dbId, 'database', { uri: conn.uri, dbName: db.name })}
                                                             >
-                                                                <span className="icon">{isExpanded(dbId) || term ? '▼' : '▶'}</span>
+                                                                <span className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                    {isExpanded(dbId) || term ? (
+                                                                        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                                                    ) : (
+                                                                        <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                                                    )}
+                                                                </span>
                                                                 <span className="text">{db.name}</span>
                                                             </div>
-
                                                             {(isExpanded(dbId) || term) && (
                                                                 <div className="node-children">
                                                                     {loading[dbId] && <div className="loading-item">Loading...</div>}

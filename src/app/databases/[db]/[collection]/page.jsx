@@ -204,7 +204,8 @@ export default function CollectionPage({ params }) {
                         disabled={exporting}
                         style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                     >
-                        {exporting ? 'Exporting...' : 'Export'} ▼
+                        {exporting ? 'Exporting...' : 'Export'}
+                        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                     </button>
                     {showExportMenu && (
                         <div style={{
@@ -289,8 +290,15 @@ export default function CollectionPage({ params }) {
                             <thead>
                                 <tr>
                                     {columns.map(col => (
-                                        <th key={col} onClick={() => handleSort(col)} className="clickable-th" style={{ borderRadius: 0 }}>
-                                            {col} {sort.field === col ? (sort.dir === 'asc' ? '↑' : '↓') : ''}
+                                        <th key={col} onClick={() => handleSort(col)} className="clickable-th" style={{ borderRadius: 0, cursor: 'pointer' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                {col}
+                                                {sort.field === col && (
+                                                    sort.dir === 'asc'
+                                                        ? <svg width="8" height="4" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ transform: 'rotate(180deg)' }}><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                                        : <svg width="8" height="4" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                                )}
+                                            </div>
                                         </th>
                                     ))}
                                 </tr>
@@ -322,10 +330,25 @@ export default function CollectionPage({ params }) {
             {selectedDoc && (
                 <div className="modal-overlay" onClick={() => setSelectedDoc(null)}>
                     <div className="modal-content" onClick={e => e.stopPropagation()}>
-                        <button className="close-btn" onClick={() => setSelectedDoc(null)}>X</button>
-                        <h3>JSON View</h3>
-                        <div className="json-container">
-                            <ReactJson src={selectedDoc} theme="rjv-default" collapsed={1} displayDataTypes={false} />
+                        <div className="modal-header" style={{ padding: '0.5rem 1rem', minHeight: '40px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1 }}>
+                                <h3 style={{ fontSize: '1rem' }}>JSON View</h3>
+                                <button className="close-btn" onClick={() => setSelectedDoc(null)} style={{ marginLeft: 'auto' }}>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div className="json-container" style={{ padding: '0', background: '#272822' }}>
+                            <ReactJson
+                                src={selectedDoc}
+                                theme="monokai"
+                                collapsed={1}
+                                displayDataTypes={false}
+                                style={{ padding: '1rem', background: 'transparent' }}
+                            />
                         </div>
                     </div>
                 </div>
@@ -374,10 +397,10 @@ export default function CollectionPage({ params }) {
                             className="btn btn-secondary"
                             disabled={page <= 1}
                             onClick={() => setPage(page - 1)}
-                            style={{ padding: '0.25rem 0.5rem', width: '32px' }}
+                            style={{ padding: '0.25rem 0.5rem', width: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                             title="Previous Page"
                         >
-                            ◄
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                         </button>
 
                         <form onSubmit={handlePageSubmit}>
@@ -404,10 +427,10 @@ export default function CollectionPage({ params }) {
                             className="btn btn-secondary"
                             disabled={page >= Math.ceil(totalCount / limit)}
                             onClick={() => setPage(page + 1)}
-                            style={{ padding: '0.25rem 0.5rem', width: '32px' }}
+                            style={{ padding: '0.25rem 0.5rem', width: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                             title="Next Page"
                         >
-                            ►
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                         </button>
                     </div>
                 </div>
