@@ -81,69 +81,10 @@
     background: var(--bg-primary);
 }
 
-/* React Json View Copy Icon Stability & Row Click */
-/* Hide the copy icon completely but keep it in DOM for programmatic clicking */
-.json-container .copy-to-clipboard-container {
-    display: inline-block !important;
-    opacity: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    position: absolute;
-    /* Removed pointer-events: none to ensure click() works */
-}
-
-/* Make rows look clickable */
-.json-container .variable-row,
-.json-container .object-key-val {
-    cursor: pointer;
-    border-radius: 2px;
-    transition: background-color 0.1s;
-}
-
+/* React Json View Customizations can go here */
 .json-container .variable-row:hover,
 .json-container .object-key-val:hover {
     background-color: rgba(255, 255, 255, 0.05);
-}
-
-/* Copy Feedback Toast */
-.copy-feedback-toast {
-    position: absolute;
-    top: 0.5rem;
-    /* inside header or just below */
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--accent-primary);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: var(--radius-sm);
-    font-size: 0.75rem;
-    font-weight: 600;
-    pointer-events: none;
-    z-index: 2000;
-    animation: fadeInOut 2s ease forwards;
-}
-
-@keyframes fadeInOut {
-    0% {
-        opacity: 0;
-        transform: translate(-50%, -10px);
-    }
-
-    10% {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-
-    80% {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-
-    100% {
-        opacity: 0;
-        transform: translate(-50%, -10px);
-    }
 }
 
 @keyframes fadeIn {

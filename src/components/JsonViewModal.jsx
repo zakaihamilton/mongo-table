@@ -7,8 +7,6 @@ const ReactJson = dynamic(() => import('react-json-view'), { ssr: false });
 import './JsonViewModal.css';
 
 export default function JsonViewModal({ data, onClose }) {
-    const [copyFeedback, setCopyFeedback] = React.useState(null);
-
     useEffect(() => {
         if (data) {
             document.body.style.overflow = 'hidden';
@@ -35,46 +33,11 @@ export default function JsonViewModal({ data, onClose }) {
         URL.revokeObjectURL(url);
     };
 
-    const handleClipboard = (copy) => {
-        // ReactJsonView handles the clipboard copy internally if this function returns undefined/true?
-        // Actually the docs say: "When a function is provided... the default copy behavior will still happen"
-        // We just need to show feedback.
-        setCopyFeedback('Copied!');
-        setTimeout(() => setCopyFeedback(null), 2000);
-    };
-
-    const handleContainerClick = (e) => {
-        // Ignore if clicking on the expand/collapse arrow (SVG/Path)
-        // Usually these paths have strict sizing or classes. 
-        // Best guess: check if target is inside the expander.
-        // React-json-view expanders are often SVGs.
-        if (e.target.tagName === 'svg' || e.target.tagName === 'path') {
-            return;
-        }
-
-        // Find closest row
-        const row = e.target.closest('.variable-row') || e.target.closest('.object-key-val');
-        if (row) {
-            const copyBtn = row.querySelector('.copy-to-clipboard-container');
-            if (copyBtn) {
-                // Programmatically click the hidden copy button
-                // We need to temporarily enable pointer-events if we disabled them?
-                // No, standard DOM click() ignores pointer-events css.
-                copyBtn.click();
-            }
-        }
-    };
-
     return (
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={e => e.stopPropagation()} style={{ padding: '0' }}>
                 <div className="modal-header">
                     <h3>JSON View</h3>
-                    {copyFeedback && (
-                        <div className="copy-feedback-toast">
-                            {copyFeedback}
-                        </div>
-                    )}
                     <div style={{ position: 'absolute', right: '0.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                         <button
                             className="close-btn"
@@ -99,14 +62,12 @@ export default function JsonViewModal({ data, onClose }) {
                 <div
                     className="json-container"
                     style={{ padding: '0', background: '#272822' }}
-                    onClick={handleContainerClick}
                 >
                     <ReactJson
                         src={data}
                         theme="monokai"
                         collapsed={1}
                         displayDataTypes={false}
-                        enableClipboard={handleClipboard}
                         style={{ padding: '1rem', background: 'transparent' }}
                     />
                 </div>
