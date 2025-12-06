@@ -81,7 +81,7 @@ export default function Sidebar() {
                 {!isCollapsed && (
                     <Link href="/" className="brand">
                         <img src="/app_icon.png" alt="Logo" style={{ width: '24px', height: '24px' }} />
-                        <span>MongoTable</span>
+                        <span>Mongo Table</span>
                     </Link>
                 )}
                 <div className="sidebar-header-actions">
