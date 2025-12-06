@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { listDatabases, listCollections } from '@/actions/mongo';
+import './Sidebar.css';
 
 export default function Sidebar() {
     const [connections, setConnections] = useState([]);
@@ -76,14 +77,14 @@ export default function Sidebar() {
 
     return (
         <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
-            <div className="sidebar-header" style={{ display: 'flex', alignItems: 'center', justifyContent: isCollapsed ? 'center' : 'space-between', padding: '1.5rem', height: '70px' }}>
+            <div className="sidebar-header">
                 {!isCollapsed && (
-                    <Link href="/" className="brand" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: '0.5rem', marginRight: '0.5rem' }}>
+                    <Link href="/" className="brand">
                         <img src="/app_icon.png" alt="Logo" style={{ width: '24px', height: '24px' }} />
                         <span>MongoTable</span>
                     </Link>
                 )}
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <div className="sidebar-header-actions">
                     {!isCollapsed && (
                         <button onClick={toggleTheme} className="sidebar-toggle" title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}>
                             {theme === 'dark' ? (
@@ -104,14 +105,13 @@ export default function Sidebar() {
             </div>
             {!isCollapsed && (
                 <>
-                    <div style={{ padding: '1rem' }}>
+                    <div className="sidebar-search-container">
                         <input
                             type="search"
                             placeholder="Filter..."
-                            className="search-input"
+                            className="sidebar-search-input"
                             value={term}
                             onChange={e => setTerm(e.target.value)}
-                            style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-primary)', color: 'var(--text-primary)' }}
                         />
                     </div>
 

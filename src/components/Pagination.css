@@ -1,0 +1,96 @@
+/* src/components/Pagination.css */
+.pagination-footer {
+    height: 50px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+    background-color: var(--bg-secondary);
+    font-size: 0.875rem;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pagination-label {
+    color: var(--text-secondary);
+}
+
+.pagination-select {
+    padding: 0.25rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    outline: none;
+    cursor: pointer;
+}
+
+.pagination-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.pagination-range {
+    color: var(--text-secondary);
+}
+
+.pagination-btn {
+    padding: 0.25rem 0.5rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-tertiary);
+    /* or generic btn style */
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    border-color: var(--accent-primary);
+    background-color: var(--bg-secondary);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-input-form {
+    display: flex;
+    align-items: center;
+}
+
+.pagination-input {
+    width: 40px;
+    padding: 0.25rem;
+    text-align: center;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    appearance: textfield;
+    /* Standardize */
+    -moz-appearance: textfield;
+}
+
+.pagination-input::-webkit-outer-spin-button,
+.pagination-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.pagination-input:focus {
+    border-color: var(--accent-primary);
+    outline: none;
+}

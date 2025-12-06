@@ -1,0 +1,87 @@
+/* src/components/CollectionTable.css */
+.table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    min-width: 100%;
+}
+
+th,
+td {
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+th {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    user-select: none;
+}
+
+th:hover {
+    background-color: var(--bg-secondary);
+}
+
+th.clickable-th {
+    cursor: pointer;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr {
+    transition: background-color 0.1s;
+}
+
+tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme='light'] tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.view-json-btn {
+    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.view-json-btn:hover {
+    border-color: var(--accent-primary);
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: inline-flex;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+}
+
+.icon-btn:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}

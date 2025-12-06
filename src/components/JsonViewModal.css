@@ -1,0 +1,169 @@
+/* src/components/JsonViewModal.css */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    width: 100%;
+    max-width: 95vw;
+    max-height: 95vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUp 0.3s ease;
+}
+
+/* Window Title Bar Style */
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Center content */
+    position: relative;
+    /* For absolute positioning of close btn if needed, or flex */
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+    /* Darker bar */
+    min-height: 40px;
+    user-select: none;
+    /* Like a window title */
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 0.875rem;
+    /* Standard window title size */
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: center;
+    flex: 1;
+}
+
+.close-btn {
+    position: absolute;
+    /* Dock to right */
+    right: 4px;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.close-btn:hover {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.json-container {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+    background: var(--bg-primary);
+}
+
+/* React Json View Copy Icon Stability & Row Click */
+/* Hide the copy icon completely but keep it in DOM for programmatic clicking */
+.json-container .copy-to-clipboard-container {
+    display: inline-block !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    position: absolute;
+    /* Removed pointer-events: none to ensure click() works */
+}
+
+/* Make rows look clickable */
+.json-container .variable-row,
+.json-container .object-key-val {
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background-color 0.1s;
+}
+
+.json-container .variable-row:hover,
+.json-container .object-key-val:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Copy Feedback Toast */
+.copy-feedback-toast {
+    position: absolute;
+    top: 0.5rem;
+    /* inside header or just below */
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent-primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    pointer-events: none;
+    z-index: 2000;
+    animation: fadeInOut 2s ease forwards;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -10px);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+
+    80% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -10px);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -1,56 +1,29 @@
-"use client";
+'use client';
 
-import { useEffect, useState, use, useRef } from 'react';
+import { useEffect, useState, use } from 'react';
 import { getDocuments, getAllDocuments } from '@/actions/mongo';
 import { useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
-import Link from 'next/link';
 import JSZip from 'jszip';
-
-// Dynamically import ReactJson to avoid SSR issues
-const ReactJson = dynamic(() => import('react-json-view'), { ssr: false });
+import CollectionHeader from '@/components/CollectionHeader';
+import CollectionTable from '@/components/CollectionTable';
+import Pagination from '@/components/Pagination';
+import JsonViewModal from '@/components/JsonViewModal';
 
 export default function CollectionPage({ params }) {
     const { db: dbName, collection: colName } = use(params);
-    const exportMenuRef = useRef(null);
+    const router = useRouter();
 
     const [documents, setDocuments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(20);
-    const [inputPage, setInputPage] = useState(1);
-
-    useEffect(() => {
-        setInputPage(page);
-    }, [page]);
-
-    const handlePageSubmit = (e) => {
-        e.preventDefault();
-        const p = parseInt(inputPage);
-        if (p >= 1 && p <= Math.ceil(totalCount / limit)) {
-            setPage(p);
-        } else {
-            setInputPage(page); // Reset if invalid
-        }
-    };
     const [totalCount, setTotalCount] = useState(0);
     const [sort, setSort] = useState({ field: undefined, dir: 'asc' });
-
-    // Split search state: `searchInput` for UI, `query` for fetching
     const [searchInput, setSearchInput] = useState('');
     const [query, setQuery] = useState('');
-
-    // We can rely on 'query' changes to trigger fetch, no need for extra trigger if logic is clean.
-    // However, if we want to force re-fetch on same query, we might need a trigger or just rely on other deps.
-    // Let's rely on 'query' update.
-
-    const [exporting, setExporting] = useState(false);
-
-    // For Modal
+    const [isExporting, setIsExporting] = useState(false);
     const [selectedDoc, setSelectedDoc] = useState(null);
-
-    const router = useRouter();
 
     useEffect(() => {
         const uri = localStorage.getItem('active_connection');
@@ -60,7 +33,6 @@ export default function CollectionPage({ params }) {
         }
 
         setLoading(true);
-        // Use 'query' here instead of 'searchInput'
         getDocuments(uri, dbName, colName, page, limit, sort.field, sort.dir, query)
             .then(res => {
                 setDocuments(res.documents);
@@ -82,42 +54,23 @@ export default function CollectionPage({ params }) {
         });
     };
 
-    const handleSearch = (e) => {
-        e.preventDefault();
-        setPage(1); // Reset to first page
-    };
-
     // Debounce Logic
     useEffect(() => {
         const timer = setTimeout(() => {
             if (searchInput !== query) {
                 setQuery(searchInput);
-                setPage(1); // Reset to page 1 on search
+                setPage(1);
             }
-        }, 1000); // 1 second delay
+        }, 1000);
 
         return () => clearTimeout(timer);
     }, [searchInput, query]);
-
-    // State for Export UI
-    const [showExportMenu, setShowExportMenu] = useState(false);
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (exportMenuRef.current && !exportMenuRef.current.contains(event.target)) {
-                setShowExportMenu(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
 
     const handleExport = async (format) => {
         const uri = localStorage.getItem('active_connection');
         if (!uri) return;
 
-        setExporting(true);
-        setShowExportMenu(false);
+        setIsExporting(true);
         try {
             const zip = new JSZip();
             const docs = await getAllDocuments(uri, dbName, colName);
@@ -125,22 +78,14 @@ export default function CollectionPage({ params }) {
             const folder = zip.folder(colName);
             if (folder) {
                 docs.forEach((doc) => {
-                    const fileName = (doc._id || 'doc') + (format === 'json' ? '.json' : '.csv'); // Just extension placeholder for now
+                    const fileName = (doc._id || 'doc') + (format === 'json' ? '.json' : '.csv');
                     let content = '';
                     if (format === 'json') {
                         content = JSON.stringify(doc, null, 2);
                     } else {
-                        // Simple CSV flatten
                         const keys = Object.keys(doc);
                         content = keys.join(',') + '\n' + keys.map(k => JSON.stringify(doc[k])).join(',');
                     }
-                    // For CSV proper export of array of docs, we usually do one file. 
-                    // But existing logic was one file per doc? 
-                    // Correction: Existing logic was generic loop. 
-                    // If CSV, usually we want one BIG csv.
-                    // Let's stick to existing logic (one file per doc) or upgrade? 
-                    // Reviewing request: "options to export as JSON or CSV files zipped"
-                    // If zipped, multiple files is fine.
                     folder.file(fileName, content);
                 });
             }
@@ -155,127 +100,35 @@ export default function CollectionPage({ params }) {
         } catch (err) {
             alert('Export failed: ' + err.message);
         } finally {
-            setExporting(false);
+            setIsExporting(false);
         }
     };
 
-    // Determine columns from the first few docs (or all current page docs)
     const columns = Array.from(new Set(documents.flatMap(doc => Object.keys(doc))));
 
     return (
         <div className="container" style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
-            <div className="header" style={{ marginBottom: 0, paddingBottom: 0.5, borderBottom: 'none', display: 'flex', alignItems: 'center', height: '60px', padding: '0 1rem', gap: '1rem' }}>
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem', overflow: 'hidden' }}>
-                    <div className="breadcrumbs" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem' }}>
-                        <Link href={`/databases/${dbName}`} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>{dbName}</Link>
-                        <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>/</span>
-                        <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{colName}</span>
-                    </div>
-                </div>
+            <CollectionHeader
+                dbName={dbName}
+                colName={colName}
+                searchInput={searchInput}
+                onSearchChange={setSearchInput}
+                onExport={handleExport}
+                isExporting={isExporting}
+            />
 
-                {/* Global Search - Visible, Debounced */}
-                <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        value={searchInput}
-                        onChange={e => setSearchInput(e.target.value)}
-                        style={{
-                            padding: '0.5rem 0.75rem',
-                            paddingRight: '2.5rem', /* Space for spinner if needed, or icon */
-                            borderRadius: 'var(--radius-sm)',
-                            border: '1px solid var(--border-color)',
-                            background: 'var(--bg-tertiary)',
-                            color: 'var(--text-primary)',
-                            width: '250px',
-                            transition: 'width 0.2s'
-                        }}
-                    />
-                    <div style={{ position: 'absolute', right: '0.75rem', pointerEvents: 'none', opacity: 0.5 }}>
-                        {loading && '...'}
-                    </div>
-                </div>
-
-                {/* Export Dropdown */}
-                <div style={{ position: 'relative' }} ref={exportMenuRef}>
-                    <button
-                        className="btn btn-primary"
-                        onClick={() => setShowExportMenu(!showExportMenu)}
-                        disabled={exporting}
-                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                    >
-                        {exporting ? 'Exporting...' : 'Export'}
-                        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    </button>
-                    {showExportMenu && (
-                        <div style={{
-                            position: 'absolute',
-                            top: '100%',
-                            right: 0,
-                            marginTop: '0.5rem',
-                            background: 'var(--bg-secondary)',
-                            border: '1px solid var(--border-color)',
-                            borderRadius: 'var(--radius-md)',
-                            boxShadow: 'var(--shadow-lg)',
-                            zIndex: 50,
-                            minWidth: '150px',
-                            display: 'flex',
-                            flexDirection: 'column'
-                        }}>
-                            <button
-                                onClick={() => handleExport('json')}
-                                style={{
-                                    padding: '0.75rem 1rem',
-                                    textAlign: 'left',
-                                    background: 'none',
-                                    border: 'none',
-                                    color: 'var(--text-primary)',
-                                    cursor: 'pointer',
-                                    hover: { background: 'var(--bg-tertiary)' }
-                                }}
-                            >
-                                JSON (Zipped)
-                            </button>
-                            <button
-                                onClick={() => handleExport('csv')}
-                                style={{
-                                    padding: '0.75rem 1rem',
-                                    textAlign: 'left',
-                                    background: 'none',
-                                    border: 'none',
-                                    color: 'var(--text-primary)',
-                                    cursor: 'pointer',
-                                    borderTop: '1px solid var(--border-color)'
-                                }}
-                            >
-                                CSV (Zipped)
-                            </button>
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Content Area - No H1, margins reduced */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                {/* Table Overlay/Wrapper */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
                 {loading && documents.length === 0 ? (
                     <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading documents...</div>
                 ) : (
-                    <div className="table-wrapper" style={{
-                        position: 'relative',
-                        flex: 1,
-                        border: 'none',
-                        borderRadius: 0,
-                        borderTop: '1px solid var(--border-color)',
-                        borderBottom: '1px solid var(--border-color)'
-                    }}>
+                    <>
                         {loading && (
                             <div style={{
                                 position: 'absolute',
                                 inset: 0,
                                 background: 'rgba(15, 23, 42, 0.4)',
                                 backdropFilter: 'blur(2px)',
-                                zIndex: 20, /* Below header (30), above content */
+                                zIndex: 20,
                                 display: 'flex',
                                 justifyContent: 'center',
                                 alignItems: 'center',
@@ -286,192 +139,29 @@ export default function CollectionPage({ params }) {
                                 </div>
                             </div>
                         )}
-                        <table style={{ minWidth: '100%' }}>
-                            <thead>
-                                <tr>
-                                    <th style={{ width: '50px', borderRadius: 0 }}></th>
-                                    {columns.map(col => (
-                                        <th key={col} onClick={() => handleSort(col)} className="clickable-th" style={{ borderRadius: 0, cursor: 'pointer' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                {col}
-                                                {sort.field === col && (
-                                                    sort.dir === 'asc'
-                                                        ? <svg width="8" height="4" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ transform: 'rotate(180deg)' }}><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                                        : <svg width="8" height="4" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                                )}
-                                            </div>
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {documents.map((doc, idx) => (
-                                    <tr key={doc._id || idx}>
-                                        <td style={{ textAlign: 'center' }}>
-                                            <button
-                                                className="icon-btn"
-                                                onClick={() => setSelectedDoc(doc)}
-                                                title="View Full Record"
-                                                style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'inline-flex' }}
-                                            >
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                                    <circle cx="12" cy="12" r="3"></circle>
-                                                </svg>
-                                            </button>
-                                        </td>
-                                        {columns.map(col => {
-                                            const val = doc[col];
-                                            const isComplex = typeof val === 'object' && val !== null;
-                                            return (
-                                                <td key={col}>
-                                                    {isComplex ? (
-                                                        <button className="view-json-btn" onClick={() => setSelectedDoc(val)}>{'{ }'}</button>
-                                                    ) : (
-                                                        <span title={String(val)}>{String(val).substring(0, 50)}{String(val).length > 50 ? '...' : ''}</span>
-                                                    )}
-                                                </td>
-                                            );
-                                        })}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                        <CollectionTable
+                            documents={documents}
+                            columns={columns}
+                            sort={sort}
+                            onSort={handleSort}
+                            onViewJson={setSelectedDoc}
+                        />
+                    </>
                 )}
             </div>
 
-            {selectedDoc && (
-                <div className="modal-overlay" onClick={() => setSelectedDoc(null)}>
-                    <div className="modal-content" onClick={e => e.stopPropagation()} style={{ padding: '0' }}>
-                        <div className="modal-header">
-                            <h3>JSON View</h3>
-                            <div style={{ position: 'absolute', right: '0.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                                <button
-                                    className="close-btn"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        const blob = new Blob([JSON.stringify(selectedDoc, null, 2)], { type: 'application/json' });
-                                        const url = URL.createObjectURL(blob);
-                                        const a = document.createElement('a');
-                                        a.href = url;
-                                        a.download = `document_${selectedDoc._id || 'record'}.json`;
-                                        document.body.appendChild(a);
-                                        a.click();
-                                        document.body.removeChild(a);
-                                        URL.revokeObjectURL(url);
-                                    }}
-                                    title="Download JSON"
-                                    style={{ position: 'static' }}
-                                >
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                    </svg>
-                                </button>
-                                <button className="close-btn" onClick={() => setSelectedDoc(null)} style={{ position: 'static' }}>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        <div className="json-container" style={{ padding: '0', background: '#272822' }}>
-                            <ReactJson
-                                src={selectedDoc}
-                                theme="monokai"
-                                collapsed={1}
-                                displayDataTypes={false}
-                                style={{ padding: '1rem', background: 'transparent' }}
-                            />
-                        </div>
-                    </div>
-                </div>
-            )}
-            {/* Footer with Icons for Pagination */}
-            <div className="pagination-footer" style={{
-                height: '50px',
-                borderTop: '1px solid var(--border-color)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '0 1rem',
-                backgroundColor: 'var(--bg-secondary)',
-                fontSize: '0.875rem'
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ color: 'var(--text-secondary)' }}>Rows:</span>
-                    <select
-                        value={limit}
-                        onChange={(e) => {
-                            setLimit(Number(e.target.value));
-                            setPage(1);
-                        }}
-                        style={{
-                            padding: '0.25rem',
-                            borderRadius: 'var(--radius-sm)',
-                            border: '1px solid var(--border-color)',
-                            backgroundColor: 'var(--bg-tertiary)',
-                            color: 'var(--text-primary)'
-                        }}
-                    >
-                        <option value={10}>10</option>
-                        <option value={20}>20</option>
-                        <option value={50}>50</option>
-                        <option value={100}>100</option>
-                    </select>
-                </div>
+            <Pagination
+                page={page}
+                limit={limit}
+                totalCount={totalCount}
+                onPageChange={setPage}
+                onLimitChange={(l) => { setLimit(l); setPage(1); }}
+            />
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <span style={{ color: 'var(--text-secondary)' }}>
-                        {totalCount === 0 ? '0-0 of 0' : `${(page - 1) * limit + 1}-${Math.min(page * limit, totalCount)} of ${totalCount}`}
-                    </span>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                        <button
-                            className="btn btn-secondary"
-                            disabled={page <= 1}
-                            onClick={() => setPage(page - 1)}
-                            style={{ padding: '0.25rem 0.5rem', width: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                            title="Previous Page"
-                        >
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                        </button>
-
-                        <form onSubmit={handlePageSubmit}>
-                            <input
-                                type="number"
-                                value={inputPage}
-                                onChange={(e) => setInputPage(e.target.value)}
-                                min={1}
-                                max={Math.ceil(totalCount / limit) || 1}
-                                style={{
-                                    width: '40px',
-                                    padding: '0.25rem',
-                                    textAlign: 'center',
-                                    borderRadius: 'var(--radius-sm)',
-                                    border: '1px solid var(--border-color)',
-                                    backgroundColor: 'var(--bg-tertiary)',
-                                    color: 'var(--text-primary)',
-                                    appearance: 'textfield'
-                                }}
-                            />
-                        </form>
-
-                        <button
-                            className="btn btn-secondary"
-                            disabled={page >= Math.ceil(totalCount / limit)}
-                            onClick={() => setPage(page + 1)}
-                            style={{ padding: '0.25rem 0.5rem', width: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                            title="Next Page"
-                        >
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <JsonViewModal
+                data={selectedDoc}
+                onClose={() => setSelectedDoc(null)}
+            />
         </div>
     );
 }

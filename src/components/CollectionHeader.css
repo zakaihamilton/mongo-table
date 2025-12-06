@@ -1,0 +1,139 @@
+/* src/components/CollectionHeader.css */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0;
+    padding-bottom: 0.5rem;
+    border-bottom: none;
+    height: 60px;
+    padding: 0 1rem;
+    gap: 1rem;
+}
+
+.breadcrumbs {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.breadcrumbs a {
+    color: var(--text-secondary);
+    text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+    color: var(--text-primary);
+}
+
+.breadcrumbs-separator {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.current-col {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    flex: 1;
+    justify-content: center;
+    max-width: 400px;
+    /* Optional constraint to keep it centered/nice */
+}
+
+.header-search-input {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.5rem 0.75rem;
+    padding-left: 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    transition: all 0.2s;
+    outline: none;
+    width: 300px;
+}
+
+.header-search-input:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    width: 400px;
+}
+
+.export-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.export-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.export-btn:hover {
+    border-color: var(--accent-primary);
+    background-color: var(--bg-tertiary);
+}
+
+.export-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 50;
+    min-width: 150px;
+    overflow: hidden;
+    animation: fadeIn 0.1s ease-out;
+}
+
+.export-item {
+    display: w-full;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    width: 100%;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.export-item:hover {
+    background-color: var(--bg-tertiary);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
