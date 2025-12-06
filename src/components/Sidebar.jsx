@@ -64,7 +64,7 @@ export default function Sidebar() {
         <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
             <div className="sidebar-header" style={{ display: 'flex', alignItems: 'center', justifyContent: isCollapsed ? 'center' : 'space-between', padding: '1.5rem', height: '70px' }}>
                 {!isCollapsed && (
-                    <Link href="/" className="brand" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginLeft: '0.5rem' }}>
+                    <Link href="/" className="brand" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                         <img src="/app_icon.png" alt="Logo" style={{ width: '24px', height: '24px' }} />
                         <span>MongoTable</span>
                     </Link>

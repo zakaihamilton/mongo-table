@@ -1,18 +1,18 @@
 "use client";
 
-import { useEffect, useState, use } from 'react';
+import { useEffect, useState, use, useRef } from 'react';
 import { getDocuments, getAllDocuments } from '@/actions/mongo';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import JSZip from 'jszip';
 
 // Dynamically import ReactJson to avoid SSR issues
 const ReactJson = dynamic(() => import('react-json-view'), { ssr: false });
 
-export default function DocumentList({ params }) {
-    const unwrappedParams = use(params);
-    const { db: dbName, collection: colName } = unwrappedParams;
+export default function CollectionPage({ params }) {
+    const { db: dbName, collection: colName } = use(params);
+    const exportMenuRef = useRef(null);
 
     const [documents, setDocuments] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -102,6 +102,16 @@ export default function DocumentList({ params }) {
     // State for Export UI
     const [showExportMenu, setShowExportMenu] = useState(false);
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (exportMenuRef.current && !exportMenuRef.current.contains(event.target)) {
+                setShowExportMenu(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
     const handleExport = async (format) => {
         const uri = localStorage.getItem('active_connection');
         if (!uri) return;
@@ -156,10 +166,10 @@ export default function DocumentList({ params }) {
         <div className="container" style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
             <div className="header" style={{ marginBottom: 0, paddingBottom: 0.5, borderBottom: 'none', display: 'flex', alignItems: 'center', height: '60px', padding: '0 1rem', gap: '1rem' }}>
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem', overflow: 'hidden' }}>
-                    <div className="breadcrumbs" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        <span style={{ fontWeight: 600, fontSize: '1.1rem', color: 'var(--text-primary)' }}>{colName}</span>
-                        <span style={{ opacity: 0.5 }}>in</span>
-                        <Link href={`/databases/${dbName}`}>{dbName}</Link>
+                    <div className="breadcrumbs" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem' }}>
+                        <Link href={`/databases/${dbName}`} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>{dbName}</Link>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>/</span>
+                        <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{colName}</span>
                     </div>
                 </div>
 
@@ -182,12 +192,12 @@ export default function DocumentList({ params }) {
                         }}
                     />
                     <div style={{ position: 'absolute', right: '0.75rem', pointerEvents: 'none', opacity: 0.5 }}>
-                        {loading ? '...' : '🔍'}
+                        {loading && '...'}
                     </div>
                 </div>
 
                 {/* Export Dropdown */}
-                <div style={{ position: 'relative' }}>
+                <div style={{ position: 'relative' }} ref={exportMenuRef}>
                     <button
                         className="btn btn-primary"
                         onClick={() => setShowExportMenu(!showExportMenu)}
