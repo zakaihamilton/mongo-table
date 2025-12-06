@@ -6,9 +6,18 @@ import './CollectionHeader.css';
 
 export default function CollectionHeader({ dbName, colName, searchInput, onSearchChange, onExport, isExporting }) {
     const [showExportMenu, setShowExportMenu] = useState(false);
+    const [connName, setConnName] = useState('');
     const exportMenuRef = useRef(null);
 
     useEffect(() => {
+        // Load connection name
+        const activeUri = localStorage.getItem('active_connection');
+        const connections = JSON.parse(localStorage.getItem('mongo_connections') || '[]');
+        const activeConn = connections.find(c => c.uri === activeUri);
+        if (activeConn) {
+            setConnName(activeConn.name);
+        }
+
         const handleClickOutside = (event) => {
             if (exportMenuRef.current && !exportMenuRef.current.contains(event.target)) {
                 setShowExportMenu(false);
@@ -27,6 +36,12 @@ export default function CollectionHeader({ dbName, colName, searchInput, onSearc
         <div className="header">
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem', overflow: 'hidden' }}>
                 <div className="breadcrumbs">
+                    {connName && (
+                        <>
+                            <Link href="/">{connName}</Link>
+                            <span className="breadcrumbs-separator">/</span>
+                        </>
+                    )}
                     <Link href={`/databases/${dbName}`}>{dbName}</Link>
                     <span className="breadcrumbs-separator">/</span>
                     <span className="current-col">{colName}</span>
