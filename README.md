@@ -1,7 +1,7 @@
 # Mongo Table
 A modern, lightweight MongoDB GUI built with Next.js.
 
-![App Icon](/app_icon.png)
+![App Icon](/public/app_icon.png)
 
 ## Features
 
