@@ -52,7 +52,9 @@ export default function CollectionTable({ documents, columns, sort, onSort, onVi
                                 return (
                                     <td key={col}>
                                         {isComplex ? (
-                                            <button className="view-json-btn" onClick={() => onViewJson(val)}>{'{}'}</button>
+                                            <button className="view-json-btn" onClick={() => onViewJson(val)}>
+                                                {Array.isArray(val) ? '[ ]' : '{ }'}
+                                            </button>
                                         ) : (
                                             <span title={String(val)}>{String(val).substring(0, 50)}{String(val).length > 50 ? '...' : ''}</span>
                                         )}
