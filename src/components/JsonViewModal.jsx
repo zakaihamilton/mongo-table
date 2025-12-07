@@ -57,7 +57,10 @@ export default function JsonViewModal({ data, onClose }) {
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-overlay" onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+        }}>
             <div className="modal-content" onClick={e => e.stopPropagation()} style={{ padding: '0' }}>
                 <div className="modal-header">
                     <h3>JSON View</h3>

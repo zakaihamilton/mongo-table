@@ -63,6 +63,8 @@ export default function CollectionPage({ params }) {
         router.push(`${pathname}?${params.toString()}`, { scroll: false });
     };
 
+    const folder = searchParams.get('folder');
+
     useEffect(() => {
         const uri = localStorage.getItem('active_connection');
         if (!uri) {
@@ -71,8 +73,7 @@ export default function CollectionPage({ params }) {
         }
 
         setLoading(true);
-        const folderParam = searchParams.get('folder');
-        const filter = folderParam ? { folder: folderParam } : {};
+        const filter = folder ? { folder } : {};
 
         getDocuments(uri, dbName, colName, page, limit, sort.field, sort.dir, query, filter)
             .then(res => {
@@ -84,7 +85,7 @@ export default function CollectionPage({ params }) {
                 setError(err.message);
                 setLoading(false);
             });
-    }, [dbName, colName, page, limit, sort, query, router, searchParams]);
+    }, [dbName, colName, page, limit, sort, query, router, folder]);
 
     const handleSort = (field) => {
         setSort(prev => {
