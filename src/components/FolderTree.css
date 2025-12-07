@@ -1,0 +1,81 @@
+/* src/components/FolderTree.css */
+.folder-tree {
+    width: 250px;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.folder-tree-header {
+    padding: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.folder-list {
+    padding: 0.5rem;
+}
+
+.folder-node {
+    display: flex;
+    flex-direction: column;
+}
+
+.folder-label {
+    display: flex;
+    align-items: center;
+    padding: 0.4rem 0.6rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    gap: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.2s;
+}
+
+.folder-label:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.folder-label.active {
+    background: var(--primary-light);
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.folder-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: inherit;
+    opacity: 0.7;
+}
+
+.folder-children {
+    padding-left: 1rem;
+    border-left: 1px solid var(--border-color);
+    margin-left: 0.5rem;
+}
+
+.folder-toggle {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-right: -4px;
+    opacity: 0.5;
+}
+
+.folder-toggle:hover {
+    opacity: 1;
+}

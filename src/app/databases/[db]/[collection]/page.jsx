@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useState, use } from 'react';
-import { getDocuments, getAllDocuments, getDocument } from '@/actions/mongo';
+import { getDocuments, getAllDocuments, getDocument, getDistinctValues } from '@/actions/mongo';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import JSZip from 'jszip';
 import CollectionHeader from '@/components/CollectionHeader';
 import CollectionTable from '@/components/CollectionTable';
 import Pagination from '@/components/Pagination';
 import JsonViewModal from '@/components/JsonViewModal';
+import FolderTree from '@/components/FolderTree';
 
 export default function CollectionPage({ params }) {
     const { db: dbName, collection: colName } = use(params);
@@ -26,6 +27,8 @@ export default function CollectionPage({ params }) {
     const [query, setQuery] = useState('');
     const [isExporting, setIsExporting] = useState(false);
     const [selectedDoc, setSelectedDoc] = useState(null);
+    const [folders, setFolders] = useState([]);
+    const [selectedFolder, setSelectedFolder] = useState(null);
 
     // Sync URL 'view' param with selectedDoc
     useEffect(() => {
@@ -49,6 +52,19 @@ export default function CollectionPage({ params }) {
         }
     }, [searchParams, dbName, colName]); // Removed selectedDoc from deps to avoid loop
 
+    // Fetch folders
+    useEffect(() => {
+        const uri = localStorage.getItem('active_connection');
+        if (!uri) return;
+
+        getDistinctValues(uri, dbName, colName, 'folder')
+            .then(setFolders)
+            .catch(console.error);
+
+        setSelectedFolder(null);
+        setPage(1);
+    }, [dbName, colName]);
+
     const handleViewJson = (doc) => {
         setSelectedDoc(doc);
         const params = new URLSearchParams(searchParams);
@@ -71,7 +87,9 @@ export default function CollectionPage({ params }) {
         }
 
         setLoading(true);
-        getDocuments(uri, dbName, colName, page, limit, sort.field, sort.dir, query)
+        const filter = selectedFolder ? { folder: selectedFolder } : {};
+
+        getDocuments(uri, dbName, colName, page, limit, sort.field, sort.dir, query, filter)
             .then(res => {
                 setDocuments(res.documents);
                 setTotalCount(res.totalCount);
@@ -81,7 +99,7 @@ export default function CollectionPage({ params }) {
                 setError(err.message);
                 setLoading(false);
             });
-    }, [dbName, colName, page, limit, sort, query, router]);
+    }, [dbName, colName, page, limit, sort, query, router, selectedFolder]);
 
     const handleSort = (field) => {
         setSort(prev => {
@@ -155,37 +173,48 @@ export default function CollectionPage({ params }) {
                 isExporting={isExporting}
             />
 
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
-                {loading && documents.length === 0 ? (
-                    <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading documents...</div>
-                ) : (
-                    <>
-                        {loading && (
-                            <div style={{
-                                position: 'absolute',
-                                inset: 0,
-                                background: 'rgba(15, 23, 42, 0.4)',
-                                backdropFilter: 'blur(2px)',
-                                zIndex: 20,
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                color: 'var(--text-primary)',
-                            }}>
-                                <div style={{ background: 'var(--bg-secondary)', padding: '0.5rem 1rem', borderRadius: 'var(--radius-sm)', boxShadow: 'var(--shadow-lg)' }}>
-                                    Updating...
+            <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+                <FolderTree
+                    folders={folders}
+                    selectedFolder={selectedFolder}
+                    onSelect={(folder) => {
+                        setSelectedFolder(folder);
+                        setPage(1);
+                    }}
+                />
+
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
+                    {loading && documents.length === 0 ? (
+                        <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading documents...</div>
+                    ) : (
+                        <>
+                            {loading && (
+                                <div style={{
+                                    position: 'absolute',
+                                    inset: 0,
+                                    background: 'rgba(15, 23, 42, 0.4)',
+                                    backdropFilter: 'blur(2px)',
+                                    zIndex: 20,
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    color: 'var(--text-primary)',
+                                }}>
+                                    <div style={{ background: 'var(--bg-secondary)', padding: '0.5rem 1rem', borderRadius: 'var(--radius-sm)', boxShadow: 'var(--shadow-lg)' }}>
+                                        Updating...
+                                    </div>
                                 </div>
-                            </div>
-                        )}
-                        <CollectionTable
-                            documents={documents}
-                            columns={columns}
-                            sort={sort}
-                            onSort={handleSort}
-                            onViewJson={handleViewJson}
-                        />
-                    </>
-                )}
+                            )}
+                            <CollectionTable
+                                documents={documents}
+                                columns={columns}
+                                sort={sort}
+                                onSort={handleSort}
+                                onViewJson={handleViewJson}
+                            />
+                        </>
+                    )}
+                </div>
             </div>
 
             <Pagination

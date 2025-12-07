@@ -73,7 +73,8 @@ export async function getDocuments(
   limit = 20,
   sortField,
   sortDir = 'asc',
-  searchQuery
+  searchQuery,
+  filter = {}
 ) {
   let client;
   try {
@@ -82,10 +83,13 @@ export async function getDocuments(
     const db = client.db(dbName);
     const collection = db.collection(colName);
 
+    // Ensure index exists for folder if filter is used (optional but good practice)
+
     const skip = (page - 1) * limit;
 
     // Build query
-    let query = {};
+    let query = { ...filter };
+
     if (searchQuery) {
       const sample = await collection.findOne({});
       if (sample) {
@@ -96,7 +100,11 @@ export async function getDocuments(
           }
         }
         if (orClauses.length > 0) {
-          query = { $or: orClauses };
+          if (Object.keys(query).length > 0) {
+            query = { $and: [{ ...query }, { $or: orClauses }] };
+          } else {
+            query = { $or: orClauses };
+          }
         }
       }
     }
@@ -166,6 +174,24 @@ export async function getDocument(uri, dbName, colName, id) {
     }
 
     return doc ? serializeDocument(doc) : null;
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    if (client) await client.close();
+  }
+}
+
+export async function getDistinctValues(uri, dbName, colName, field) {
+  let client;
+  try {
+    client = new MongoClient(uri);
+    await client.connect();
+    const db = client.db(dbName);
+    const collection = db.collection(colName);
+
+    const values = await collection.distinct(field);
+    // Filter to only string values for folder structure
+    return values.filter(v => typeof v === 'string').sort();
   } catch (error) {
     throw new Error(error.message);
   } finally {
