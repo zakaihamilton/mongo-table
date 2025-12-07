@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import './FolderTree.css';
 
 // Helper to build tree from paths
@@ -27,8 +27,42 @@ const buildTree = (paths) => {
     return root;
 };
 
-const FolderNode = ({ node, selectedPath, onSelect, depth = 0 }) => {
+// Helper to filter tree based on search term
+const filterTree = (nodes, term, forceShow = false) => {
+    if (!term && !forceShow) return nodes;
+
+    const newNodes = {};
+
+    Object.keys(nodes).forEach(key => {
+        const node = nodes[key];
+        // Safe string check
+        const matches = forceShow || String(node.fullPath).toLowerCase().includes(term.toLowerCase());
+        const shouldForceChildren = matches;
+
+        const filteredChildren = filterTree(node.children, term, shouldForceChildren);
+        const hasMatchingChildren = Object.keys(filteredChildren).length > 0;
+
+        if (matches || hasMatchingChildren) {
+            newNodes[key] = {
+                ...node,
+                children: filteredChildren
+            };
+        }
+    });
+
+    return newNodes;
+};
+
+const FolderNode = ({ node, selectedPath, onSelect, depth = 0, searchTerm }) => {
     const [isExpanded, setIsExpanded] = useState(true);
+
+    // Auto-expand if searching
+    useEffect(() => {
+        if (searchTerm) {
+            setIsExpanded(true);
+        }
+    }, [searchTerm]);
+
     const hasChildren = Object.keys(node.children).length > 0;
     const isSelected = selectedPath === node.fullPath;
 
@@ -47,6 +81,7 @@ const FolderNode = ({ node, selectedPath, onSelect, depth = 0 }) => {
             <div
                 className={`folder-label ${isSelected ? 'active' : ''}`}
                 onClick={handleSelect}
+                style={{ paddingLeft: `${depth * 12 + 4}px` }}
             >
                 <div
                     className="folder-toggle"
@@ -65,7 +100,7 @@ const FolderNode = ({ node, selectedPath, onSelect, depth = 0 }) => {
                 <span className="folder-name">{node.name}</span>
             </div>
 
-            {hasChildren && isExpanded && (
+            {isExpanded && hasChildren && (
                 <div className="folder-children">
                     {Object.keys(node.children).sort().map(key => (
                         <FolderNode
@@ -74,6 +109,7 @@ const FolderNode = ({ node, selectedPath, onSelect, depth = 0 }) => {
                             selectedPath={selectedPath}
                             onSelect={onSelect}
                             depth={depth + 1}
+                            searchTerm={searchTerm}
                         />
                     ))}
                 </div>
@@ -87,36 +123,44 @@ export default function FolderTree({
     selectedFolder,
     onSelect,
     showHeader = true,
-    showAllRecords = true
+    showAllRecords = true,
+    searchTerm = ''
 }) {
     const tree = useMemo(() => buildTree(folders), [folders]);
+    const filteredTree = useMemo(() => filterTree(tree, searchTerm), [tree, searchTerm]);
+    const hasVisibleNodes = Object.keys(filteredTree).length > 0;
     const hasFolders = folders.length > 0;
 
     if (!hasFolders) return null;
 
+    // If we have a search term but no matches, show message
+    if (searchTerm && !hasVisibleNodes) {
+        return <div className="folder-tree"><div style={{ padding: '0.5rem', color: 'var(--text-muted)', fontSize: '0.8rem' }}>No matching folders</div></div>;
+    }
+
     return (
         <div className="folder-tree">
             {showHeader && (
-                <div className="folder-tree-header">
-                    Folders
+                <div className="folder-header">
+                    <span className="folder-title">Folders</span>
                 </div>
             )}
             <div className="folder-list">
-                {showAllRecords && (
+                {showAllRecords && !searchTerm && (
                     <div
                         className={`folder-label ${!selectedFolder ? 'active' : ''}`}
                         onClick={() => onSelect(null)}
                     >
-                        <div style={{ width: 16 }}></div>
                         <span className="folder-name">All Records</span>
                     </div>
                 )}
-                {Object.keys(tree).sort().map(key => (
+                {Object.keys(filteredTree).sort().map(key => (
                     <FolderNode
                         key={key}
-                        node={tree[key]}
+                        node={filteredTree[key]}
                         selectedPath={selectedFolder}
                         onSelect={onSelect}
+                        searchTerm={searchTerm}
                     />
                 ))}
             </div>

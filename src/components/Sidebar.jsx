@@ -78,7 +78,7 @@ export default function Sidebar() {
     };
 
     const isExpanded = (id) => !!expanded[id];
-    const hits = (text) => !term || text.toLowerCase().includes(term.toLowerCase());
+    const hits = (text) => !term || String(text).toLowerCase().includes(term.toLowerCase());
 
     const toggleSidebar = () => setIsCollapsed(!isCollapsed);
 
@@ -136,7 +136,13 @@ export default function Sidebar() {
                                     if (hits(db.name)) return true;
                                     const dbId = `${connId}|db-${db.name}`;
                                     const colList = cache[dbId] || [];
-                                    return colList.some(c => hits(c.name));
+                                    return colList.some(c => {
+                                        if (hits(c.name)) return true;
+                                        // Check folders for this collection
+                                        const colId = `${dbId}|col-${c.name}`;
+                                        const folders = cache[colId] || [];
+                                        return folders.some(f => hits(f));
+                                    });
                                 });
 
                                 const showConn = hits(conn.name) || matchingDBs.length > 0;
@@ -165,7 +171,12 @@ export default function Sidebar() {
                                                 {dbList.map((db) => {
                                                     const dbId = `${connId}|db-${db.name}`;
                                                     const colList = cache[dbId] || [];
-                                                    const matchingCols = colList.filter(c => hits(c.name));
+                                                    const matchingCols = colList.filter(c => {
+                                                        if (hits(c.name)) return true;
+                                                        const colId = `${dbId}|col-${c.name}`;
+                                                        const folders = cache[colId] || [];
+                                                        return folders.some(f => hits(f));
+                                                    });
 
                                                     const showDb = hits(db.name) || matchingCols.length > 0;
                                                     if (!showDb) return null;
@@ -190,15 +201,17 @@ export default function Sidebar() {
                                                                     {loading[dbId] && <div className="loading-item">Loading...</div>}
 
                                                                     {colList.map((col) => {
-                                                                        if (!hits(col.name)) return null;
-
                                                                         const colId = `${dbId}|col-${col.name}`;
+                                                                        const folders = cache[colId] || [];
+                                                                        const hasFolders = folders.length > 0;
+                                                                        const hasMatchingFolders = term && folders.some(f => hits(f));
+
+                                                                        if (!hits(col.name) && !hasMatchingFolders) return null;
+
                                                                         const href = `/databases/${db.name}/${col.name}`;
                                                                         const isColActive = pathname === href;
 
                                                                         // Check folder data
-                                                                        const folders = cache[colId] || [];
-                                                                        const hasFolders = folders.length > 0;
                                                                         const expandedCol = isExpanded(colId);
 
                                                                         const currentFolder = isColActive ? searchParams.get('folder') : null;
@@ -281,6 +294,7 @@ export default function Sidebar() {
                                                                                                 }}
                                                                                                 showHeader={false}
                                                                                                 showAllRecords={false}
+                                                                                                searchTerm={term}
                                                                                             />
                                                                                         </div>
                                                                                     )
