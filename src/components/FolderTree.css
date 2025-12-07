@@ -1,19 +1,23 @@
-/* src/components/FolderTree.css */
 .folder-tree {
-    width: 250px;
-    background: var(--bg-secondary);
-    border-right: 1px solid var(--border-color);
+    /* width: 250px; Removed for Sidebar integration */
+    background: transparent;
+    /* Use parent bg */
+    border-right: none;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
+    /* overflow-y: auto; handled by parent */
     flex-shrink: 0;
+    width: 100%;
 }
 
 .folder-tree-header {
-    padding: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    color: var(--text-primary);
-    border-bottom: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    /* border-bottom: 1px solid var(--border-color); */
 }
 
 .folder-list {

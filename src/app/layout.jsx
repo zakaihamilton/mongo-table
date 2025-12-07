@@ -7,12 +7,16 @@ export const metadata = {
 
 import Sidebar from '@/components/Sidebar';
 
+import { Suspense } from 'react';
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
         <div className="app-shell">
-          <Sidebar />
+          <Suspense fallback={<div className="sidebar" />}>
+            <Sidebar />
+          </Suspense>
           <main className="main-content">
             {children}
           </main>

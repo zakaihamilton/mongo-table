@@ -82,7 +82,13 @@ const FolderNode = ({ node, selectedPath, onSelect, depth = 0 }) => {
     );
 };
 
-export default function FolderTree({ folders = [], selectedFolder, onSelect }) {
+export default function FolderTree({
+    folders = [],
+    selectedFolder,
+    onSelect,
+    showHeader = true,
+    showAllRecords = true
+}) {
     const tree = useMemo(() => buildTree(folders), [folders]);
     const hasFolders = folders.length > 0;
 
@@ -90,17 +96,21 @@ export default function FolderTree({ folders = [], selectedFolder, onSelect }) {
 
     return (
         <div className="folder-tree">
-            <div className="folder-tree-header">
-                Folders
-            </div>
-            <div className="folder-list">
-                <div
-                    className={`folder-label ${!selectedFolder ? 'active' : ''}`}
-                    onClick={() => onSelect(null)}
-                >
-                    <div style={{ width: 16 }}></div>
-                    <span className="folder-name">All Records</span>
+            {showHeader && (
+                <div className="folder-tree-header">
+                    Folders
                 </div>
+            )}
+            <div className="folder-list">
+                {showAllRecords && (
+                    <div
+                        className={`folder-label ${!selectedFolder ? 'active' : ''}`}
+                        onClick={() => onSelect(null)}
+                    >
+                        <div style={{ width: 16 }}></div>
+                        <span className="folder-name">All Records</span>
+                    </div>
+                )}
                 {Object.keys(tree).sort().map(key => (
                     <FolderNode
                         key={key}
