@@ -208,21 +208,44 @@ export default function Sidebar() {
                                                                                 <div
                                                                                     className={`node-label ${isColActive && !currentFolder ? 'active' : ''}`}
                                                                                     onClick={(e) => {
-                                                                                        // Navigate if not already there
-                                                                                        if (!isColActive) {
+                                                                                        // Label Click: Navigate and Bootstrap
+
+                                                                                        // Logic:
+                                                                                        // 1. Always navigate (unless already there at root)
+                                                                                        // 2. If we don't know about folders yet (!cache), try to fetch (bootstrap)
+
+                                                                                        const isAtRoot = isColActive && !currentFolder;
+
+                                                                                        if (!isAtRoot) {
                                                                                             localStorage.setItem('active_connection', conn.uri);
                                                                                             router.push(href);
                                                                                         }
 
-                                                                                        // Try to fetch/expand if not cached OR if we know there are folders
-                                                                                        // This fixes the bootstrapping issue where we wouldn't fetch because we didn't think there were folders
-                                                                                        if (!cache[colId] || (cache[colId] && cache[colId].length > 0)) {
+                                                                                        // Bootstrap check
+                                                                                        if (!cache[colId]) {
                                                                                             toggleExpand(colId, 'collection', { uri: conn.uri, dbName: db.name, colName: col.name });
                                                                                         }
                                                                                     }}
+                                                                                    style={{ display: 'flex', alignItems: 'center' }}
                                                                                 >
-                                                                                    <span className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                                                        {/* Show expand icon if has folders, else show file icon */}
+                                                                                    {/* Chevron / Toggle */}
+                                                                                    <span
+                                                                                        className="icon-toggle"
+                                                                                        style={{
+                                                                                            width: '16px',
+                                                                                            display: 'flex',
+                                                                                            alignItems: 'center',
+                                                                                            justifyContent: 'center',
+                                                                                            cursor: 'pointer',
+                                                                                            marginRight: '4px'
+                                                                                        }}
+                                                                                        onClick={(e) => {
+                                                                                            if (hasFolders) {
+                                                                                                e.stopPropagation();
+                                                                                                toggleExpand(colId, 'collection', { uri: conn.uri, dbName: db.name, colName: col.name });
+                                                                                            }
+                                                                                        }}
+                                                                                    >
                                                                                         {hasFolders ? (
                                                                                             (expandedCol || term) ? (
                                                                                                 <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -230,42 +253,52 @@ export default function Sidebar() {
                                                                                                 <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                                                                             )
                                                                                         ) : (
-                                                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                                                                                            <span style={{ width: '10px' }} /> // Spacer
                                                                                         )}
                                                                                     </span>
+
+                                                                                    {/* Folder Icon */}
+                                                                                    <span className="icon-folder" style={{ display: 'flex', alignItems: 'center', marginRight: '8px' }}>
+                                                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                                                                                    </span>
+
                                                                                     <span className="text">{col.name}</span>
                                                                                 </div>
 
-                                                                                {hasFolders && (expandedCol || term) && (
-                                                                                    <div className="node-children">
-                                                                                        {loading[colId] && <div className="loading-item">Loading folders...</div>}
-                                                                                        <FolderTree
-                                                                                            folders={folders}
-                                                                                            selectedFolder={isColActive ? currentFolder : null}
-                                                                                            onSelect={(folder) => {
-                                                                                                if (!isColActive) {
-                                                                                                    localStorage.setItem('active_connection', conn.uri);
-                                                                                                }
-                                                                                                const target = folder ? `${href}?folder=${folder}` : href;
-                                                                                                router.push(target);
-                                                                                            }}
-                                                                                            showHeader={false}
-                                                                                            showAllRecords={false}
-                                                                                        />
-                                                                                    </div>
-                                                                                )}
+                                                                                {
+                                                                                    hasFolders && (expandedCol || term) && (
+                                                                                        <div className="node-children">
+                                                                                            {loading[colId] && <div className="loading-item">Loading folders...</div>}
+                                                                                            <FolderTree
+                                                                                                folders={folders}
+                                                                                                selectedFolder={isColActive ? currentFolder : null}
+                                                                                                onSelect={(folder) => {
+                                                                                                    if (!isColActive) {
+                                                                                                        localStorage.setItem('active_connection', conn.uri);
+                                                                                                    }
+                                                                                                    const target = folder ? `${href}?folder=${folder}` : href;
+                                                                                                    router.push(target);
+                                                                                                }}
+                                                                                                showHeader={false}
+                                                                                                showAllRecords={false}
+                                                                                            />
+                                                                                        </div>
+                                                                                    )
+                                                                                }
 
                                                                                 {/* Auto-load folders logic if needed, but manual expand is safer for perf */}
                                                                             </div>
                                                                         );
                                                                     })}
                                                                 </div>
-                                                            )}
+                                                            )
+                                                            }
                                                         </div>
                                                     );
                                                 })}
                                             </div>
-                                        )}
+                                        )
+                                        }
                                     </div>
                                 );
                             })}
@@ -278,7 +311,8 @@ export default function Sidebar() {
                         </div>
                     )}
                 </>
-            )}
-        </aside>
+            )
+            }
+        </aside >
     );
 }
