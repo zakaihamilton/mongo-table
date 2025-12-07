@@ -13,7 +13,7 @@ export default function CollectionTable({ documents, columns, sort, onSort, onVi
             <table>
                 <thead>
                     <tr>
-                        <th style={{ width: '50px', borderRadius: 0 }}></th>
+                        <th className="sticky-col" style={{ width: '50px', borderRadius: 0 }}></th>
                         {columns.map(col => (
                             <th key={col} onClick={() => onSort(col)} className="clickable-th" style={{ borderRadius: 0 }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -31,7 +31,7 @@ export default function CollectionTable({ documents, columns, sort, onSort, onVi
                 <tbody>
                     {documents.map((doc, idx) => (
                         <tr key={doc._id || idx}>
-                            <td style={{ textAlign: 'center' }}>
+                            <td className="sticky-col" style={{ textAlign: 'center' }}>
                                 <button
                                     className="icon-btn"
                                     onClick={() => onViewJson(doc)}

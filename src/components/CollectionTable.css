@@ -17,10 +17,16 @@ td {
     padding: 0.5rem 0.75rem;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
     white-space: nowrap;
     max-width: 300px;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+th:last-child,
+td:last-child {
+    border-right: none;
 }
 
 th {
@@ -40,6 +46,36 @@ th:hover {
 th.clickable-th {
     cursor: pointer;
 }
+
+/* Sticky Column Styles */
+.sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 40;
+    background-color: var(--bg-primary);
+    /* Default cell background */
+    border-right: none;
+    /* remove standard border to rely on shadow */
+    box-shadow: inset -1px 0 0 0 var(--border-color);
+}
+
+th.sticky-col {
+    z-index: 50;
+    /* Higher than sticky header and sticky col */
+    background-color: var(--bg-tertiary);
+}
+
+tr:hover .sticky-col {
+    background-color: var(--bg-secondary);
+    /* Simulating row hover */
+}
+
+[data-theme='light'] tr:hover .sticky-col {
+    background-color: #f1f5f9;
+    /* Approximate light mode hover */
+}
+
+/* End Sticky Column Styles */
 
 tr:last-child td {
     border-bottom: none;
