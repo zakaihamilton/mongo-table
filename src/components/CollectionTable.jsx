@@ -45,11 +45,14 @@ export default function CollectionTable({ documents, columns, sort, onSort, onVi
                             </td>
                             {columns.map(col => {
                                 const val = doc[col];
+                                if (val === undefined || val === null) {
+                                    return <td key={col}></td>;
+                                }
                                 const isComplex = typeof val === 'object' && val !== null;
                                 return (
                                     <td key={col}>
                                         {isComplex ? (
-                                            <button className="view-json-btn" onClick={() => onViewJson(val)}>{'{ }'}</button>
+                                            <button className="view-json-btn" onClick={() => onViewJson(val)}>{'{}'}</button>
                                         ) : (
                                             <span title={String(val)}>{String(val).substring(0, 50)}{String(val).length > 50 ? '...' : ''}</span>
                                         )}
