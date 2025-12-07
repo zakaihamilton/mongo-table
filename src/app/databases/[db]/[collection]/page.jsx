@@ -168,9 +168,8 @@ export default function CollectionPage({ params }) {
                             <div style={{
                                 position: 'absolute',
                                 inset: 0,
-                                background: 'rgba(15, 23, 42, 0.4)',
                                 backdropFilter: 'blur(2px)',
-                                zIndex: 20,
+                                zIndex: 60,
                                 display: 'flex',
                                 justifyContent: 'center',
                                 alignItems: 'center',

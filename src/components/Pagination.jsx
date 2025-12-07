@@ -47,6 +47,15 @@ export default function Pagination({ page, limit, totalCount, onPageChange, onLi
                     <button
                         className="pagination-btn"
                         disabled={page <= 1}
+                        onClick={() => onPageChange(1)}
+                        title="First Page"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="11 17 6 12 11 7"></polyline><polyline points="18 17 13 12 18 7"></polyline></svg>
+                    </button>
+
+                    <button
+                        className="pagination-btn"
+                        disabled={page <= 1}
                         onClick={() => onPageChange(page - 1)}
                         title="Previous Page"
                     >
@@ -62,6 +71,7 @@ export default function Pagination({ page, limit, totalCount, onPageChange, onLi
                             min={1}
                             max={maxPage}
                         />
+                        <span style={{ marginLeft: '0.5rem', color: 'var(--text-secondary)' }}>/ {maxPage}</span>
                     </form>
 
                     <button
@@ -71,6 +81,15 @@ export default function Pagination({ page, limit, totalCount, onPageChange, onLi
                         title="Next Page"
                     >
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    </button>
+
+                    <button
+                        className="pagination-btn"
+                        disabled={page >= maxPage}
+                        onClick={() => onPageChange(maxPage)}
+                        title="Last Page"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg>
                     </button>
                 </div>
             </div>
