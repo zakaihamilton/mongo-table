@@ -114,31 +114,44 @@ export default function CollectionPage({ params }) {
 
         setIsExporting(true);
         try {
-            const zip = new JSZip();
             const docs = await getAllDocuments(uri, dbName, colName);
 
-            const folder = zip.folder(colName);
-            if (folder) {
-                docs.forEach((doc) => {
-                    const fileName = (doc._id || 'doc') + (format === 'json' ? '.json' : '.csv');
-                    let content = '';
-                    if (format === 'json') {
-                        content = JSON.stringify(doc, null, 2);
-                    } else {
-                        const keys = Object.keys(doc);
-                        content = keys.join(',') + '\n' + keys.map(k => JSON.stringify(doc[k])).join(',');
-                    }
-                    folder.file(fileName, content);
-                });
-            }
+            if (format === 'json-single') {
+                // Export as a single JSON file containing all documents
+                const content = JSON.stringify(docs, null, 2);
+                const blob = new Blob([content], { type: 'application/json' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `${colName}.json`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } else {
+                // Export as zip (json-zip or csv)
+                const zip = new JSZip();
+                const zipFolder = zip.folder(colName);
+                if (zipFolder) {
+                    docs.forEach((doc) => {
+                        const fileName = (doc._id || 'doc') + (format === 'json-zip' ? '.json' : '.csv');
+                        let content = '';
+                        if (format === 'json-zip') {
+                            content = JSON.stringify(doc, null, 2);
+                        } else {
+                            const keys = Object.keys(doc);
+                            content = keys.join(',') + '\n' + keys.map(k => JSON.stringify(doc[k])).join(',');
+                        }
+                        zipFolder.file(fileName, content);
+                    });
+                }
 
-            const content = await zip.generateAsync({ type: "blob" });
-            const url = window.URL.createObjectURL(content);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `${colName}_${format}.zip`;
-            a.click();
-            window.URL.revokeObjectURL(url);
+                const content = await zip.generateAsync({ type: "blob" });
+                const url = window.URL.createObjectURL(content);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `${colName}_${format === 'json-zip' ? 'json' : 'csv'}.zip`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
         } catch (err) {
             alert('Export failed: ' + err.message);
         } finally {

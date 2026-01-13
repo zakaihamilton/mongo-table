@@ -72,8 +72,11 @@ export default function CollectionHeader({ dbName, colName, searchInput, onSearc
 
                 {showExportMenu && (
                     <div className="export-menu">
-                        <button className="export-item" onClick={() => handleExportClick('json')}>
-                            JSON
+                        <button className="export-item" onClick={() => handleExportClick('json-single')}>
+                            JSON (Single File)
+                        </button>
+                        <button className="export-item" onClick={() => handleExportClick('json-zip')}>
+                            JSON (Zip)
                         </button>
                         <button className="export-item" onClick={() => handleExportClick('csv')}>
                             CSV
