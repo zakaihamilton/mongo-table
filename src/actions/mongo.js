@@ -1,6 +1,6 @@
 "use server";
 
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 
 // Helper to serialize documents (convert ObjectId to string, etc)
 function serializeDocument(doc) {
@@ -160,7 +160,6 @@ export async function getDocument(uri, dbName, colName, id) {
 
     let query = { _id: id };
     try {
-      const { ObjectId } = require('mongodb');
       query = { _id: new ObjectId(id) };
     } catch (e) {
       // If ID is not a valid ObjectId, try as string
