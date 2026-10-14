@@ -6,17 +6,22 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "dependencies": {
     "jszip": "^3.10.1",
     "mongodb": "^6.12.0",
-    "next": "16.0.7",
+    "next": "16.4.1",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-json-view": "^1.21.3"
   },
   "devDependencies": {
-    "eslint": "^9.17.0"
+    "eslint": "^9.17.0",
+    "eslint-config-next": "16.4.1",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=24.22.0 <25"
   }
 }
