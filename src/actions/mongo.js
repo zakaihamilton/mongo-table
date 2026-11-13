@@ -4,7 +4,7 @@ import { MongoClient, ObjectId } from "mongodb";
 
 // Helper to serialize documents (convert ObjectId to string, etc)
 function serializeDocument(doc) {
-  return JSON.parse(JSON.stringify(doc, (key, value) => {
+  return JSON.parse(JSON.stringify(doc, (_key, value) => {
     return value;
   }));
 }
@@ -161,7 +161,7 @@ export async function getDocument(uri, dbName, colName, id) {
     let query = { _id: id };
     try {
       query = { _id: new ObjectId(id) };
-    } catch (e) {
+    } catch (_e) {
       // If ID is not a valid ObjectId, try as string
       query = { _id: id };
     }

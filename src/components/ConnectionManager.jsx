@@ -43,7 +43,7 @@ export default function ConnectionManager() {
       setNewUri('');
       setNewName('');
     } else {
-      setError('Connection failed: ' + result.error);
+      setError(`Connection failed: ${result.error}`);
     }
   };
 
@@ -76,7 +76,7 @@ export default function ConnectionManager() {
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
         />
-        <button className="btn btn-primary" onClick={handleAdd} disabled={loading}>
+        <button type="button" className="btn btn-primary" onClick={handleAdd} disabled={loading}>
           {loading ? 'Testing...' : 'Add Connection'}
         </button>
       </div>
@@ -95,8 +95,8 @@ export default function ConnectionManager() {
               gap: '0.5rem',
               justifyContent: 'flex-start'
             }}>
-              <button className="btn btn-secondary" onClick={() => connect(conn.uri)}>Connect</button>
-              <button className="btn btn-danger" onClick={() => handleRemove(idx)}>Remove</button>
+              <button type="button" className="btn btn-secondary" onClick={() => connect(conn.uri)}>Connect</button>
+              <button type="button" className="btn btn-danger" onClick={() => handleRemove(idx)}>Remove</button>
             </div>
           </div>
         ))}

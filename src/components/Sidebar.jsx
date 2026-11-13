@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { listDatabases, listCollections, getDistinctValues } from '@/actions/mongo';
 import FolderTree from './FolderTree';
@@ -87,25 +88,25 @@ export default function Sidebar() {
             <div className="sidebar-header">
                 {!isCollapsed && (
                     <Link href="/" className="brand">
-                        <img src="/app_icon.png" alt="Logo" style={{ width: '48px', height: '48px' }} />
+                        <Image src="/app_icon.png" alt="Logo" width={48} height={48} />
                         <span>Mongo Table</span>
                     </Link>
                 )}
                 <div className="sidebar-header-actions">
                     {!isCollapsed && (
-                        <button onClick={toggleTheme} className="sidebar-toggle" title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}>
+                        <button type="button" onClick={toggleTheme} className="sidebar-toggle" title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}>
                             {theme === 'dark' ? (
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg>
+                                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg>
                             ) : (
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+                                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
                             )}
                         </button>
                     )}
-                    <button onClick={toggleSidebar} className="sidebar-toggle">
+                    <button type="button" onClick={toggleSidebar} className="sidebar-toggle">
                         {isCollapsed ? (
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                         ) : (
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                         )}
                     </button>
                 </div>
@@ -150,19 +151,19 @@ export default function Sidebar() {
 
                                 return (
                                     <div key={connId} className="tree-node">
-                                        <div
+                                        <button type="button" aria-expanded={isExpanded(connId) || Boolean(term)}
                                             className="node-label"
                                             onClick={() => toggleExpand(connId, 'connection', { uri: conn.uri })}
                                         >
                                             <span className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                 {isExpanded(connId) || term ? (
-                                                    <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                                    <svg aria-hidden="true" width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                                 ) : (
-                                                    <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                                    <svg aria-hidden="true" width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                                 )}
                                             </span>
                                             <span className="text">{conn.name}</span>
-                                        </div>
+                                        </button>
 
                                         {(isExpanded(connId) || term) && (
                                             <div className="node-children">
@@ -183,19 +184,19 @@ export default function Sidebar() {
 
                                                     return (
                                                         <div key={dbId} className="tree-node">
-                                                            <div
+                                                            <button type="button" aria-expanded={isExpanded(dbId) || Boolean(term)}
                                                                 className="node-label"
                                                                 onClick={() => toggleExpand(dbId, 'database', { uri: conn.uri, dbName: db.name })}
                                                             >
                                                                 <span className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                                     {isExpanded(dbId) || term ? (
-                                                                        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                                                        <svg aria-hidden="true" width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                                                     ) : (
-                                                                        <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                                                        <svg aria-hidden="true" width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                                                     )}
                                                                 </span>
                                                                 <span className="text">{db.name}</span>
-                                                            </div>
+                                                            </button>
                                                             {(isExpanded(dbId) || term) && (
                                                                 <div className="node-children">
                                                                     {loading[dbId] && <div className="loading-item">Loading...</div>}
@@ -218,64 +219,46 @@ export default function Sidebar() {
 
                                                                         return (
                                                                             <div key={colId} className="tree-node">
-                                                                                <div
-                                                                                    className={`node-label ${isColActive && !currentFolder ? 'active' : ''}`}
-                                                                                    onClick={(e) => {
-                                                                                        // Label Click: Navigate and Bootstrap
-
-                                                                                        // Logic:
-                                                                                        // 1. Always navigate (unless already there at root)
-                                                                                        // 2. If we don't know about folders yet (!cache), try to fetch (bootstrap)
-
-                                                                                        const isAtRoot = isColActive && !currentFolder;
-
-                                                                                        if (!isAtRoot) {
-                                                                                            localStorage.setItem('active_connection', conn.uri);
-                                                                                            router.push(href);
-                                                                                        }
-
-                                                                                        // Bootstrap check
-                                                                                        if (!cache[colId]) {
-                                                                                            toggleExpand(colId, 'collection', { uri: conn.uri, dbName: db.name, colName: col.name });
-                                                                                        }
-                                                                                    }}
-                                                                                    style={{ display: 'flex', alignItems: 'center' }}
-                                                                                >
-                                                                                    {/* Chevron / Toggle */}
-                                                                                    <span
-                                                                                        className="icon-toggle"
-                                                                                        style={{
-                                                                                            width: '16px',
-                                                                                            display: 'flex',
-                                                                                            alignItems: 'center',
-                                                                                            justifyContent: 'center',
-                                                                                            cursor: 'pointer',
-                                                                                            marginRight: '4px'
-                                                                                        }}
-                                                                                        onClick={(e) => {
-                                                                                            if (hasFolders) {
-                                                                                                e.stopPropagation();
+                                                                                <div className={`node-label ${isColActive && !currentFolder ? 'active' : ''}`}>
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        className="node-label-control icon-toggle"
+                                                                                        aria-label={`${expandedCol || term ? 'Collapse' : 'Expand'} ${col.name} folders`}
+                                                                                        aria-expanded={expandedCol || Boolean(term)}
+                                                                                        disabled={!hasFolders || Boolean(term)}
+                                                                                        onClick={() => toggleExpand(colId, 'collection', { uri: conn.uri, dbName: db.name, colName: col.name })}
+                                                                                        style={{ width: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '4px' }}
+                                                                                    >
+                                                                                        {hasFolders ? (
+                                                                                            (expandedCol || term) ? (
+                                                                                                <svg aria-hidden="true" width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                                                                            ) : (
+                                                                                                <svg aria-hidden="true" width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                                                                            )
+                                                                                        ) : (
+                                                                                            <span style={{ width: '10px' }} />
+                                                                                        )}
+                                                                                    </button>
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        className="node-label-control collection-control"
+                                                                                        aria-current={isColActive && !currentFolder ? 'page' : undefined}
+                                                                                        onClick={() => {
+                                                                                            const isAtRoot = isColActive && !currentFolder;
+                                                                                            if (!isAtRoot) {
+                                                                                                localStorage.setItem('active_connection', conn.uri);
+                                                                                                router.push(href);
+                                                                                            }
+                                                                                            if (!cache[colId]) {
                                                                                                 toggleExpand(colId, 'collection', { uri: conn.uri, dbName: db.name, colName: col.name });
                                                                                             }
                                                                                         }}
                                                                                     >
-                                                                                        {hasFolders ? (
-                                                                                            (expandedCol || term) ? (
-                                                                                                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                                                                            ) : (
-                                                                                                <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                                                                            )
-                                                                                        ) : (
-                                                                                            <span style={{ width: '10px' }} /> // Spacer
-                                                                                        )}
-                                                                                    </span>
-
-                                                                                    {/* Folder Icon */}
-                                                                                    <span className="icon-folder" style={{ display: 'flex', alignItems: 'center', marginRight: '8px' }}>
-                                                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                                                                                    </span>
-
-                                                                                    <span className="text">{col.name}</span>
+                                                                                        <span className="icon-folder" style={{ display: 'flex', alignItems: 'center', marginRight: '8px' }}>
+                                                                                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                                                                                        </span>
+                                                                                        <span className="text">{col.name}</span>
+                                                                                    </button>
                                                                                 </div>
 
                                                                                 {
