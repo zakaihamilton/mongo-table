@@ -129,6 +129,32 @@
     text-decoration: none;
 }
 
+button.node-label {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    text-align: left;
+}
+
+.node-label-control {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.collection-control {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: left;
+}
+
 .node-label:hover,
 .tree-leaf:hover {
     background-color: var(--bg-tertiary);

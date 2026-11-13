@@ -57,28 +57,28 @@ export default function JsonViewModal({ data, onClose }) {
     };
 
     return (
-        <div className="modal-overlay" onClick={(e) => {
-            e.stopPropagation();
-            onClose();
+        // biome-ignore lint/a11y/noStaticElementInteractions: The backdrop dismisses the modal by pointer; the Close button provides keyboard access.
+        <div className="modal-overlay" role="presentation" onClick={(e) => {
+            if (e.target === e.currentTarget) onClose();
         }}>
-            <div className="modal-content" onClick={e => e.stopPropagation()} style={{ padding: '0' }}>
+            <div className="modal-content" style={{ padding: '0' }}>
                 <div className="modal-header">
                     <h3>JSON View</h3>
                     <div style={{ position: 'absolute', right: '0.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                        <button
+                        <button type="button"
                             className="close-btn"
                             onClick={handleDownload}
                             title="Download JSON"
                             style={{ position: 'static' }}
                         >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                 <polyline points="7 10 12 15 17 10"></polyline>
                                 <line x1="12" y1="15" x2="12" y2="3"></line>
                             </svg>
                         </button>
-                        <button className="close-btn" onClick={onClose} style={{ position: 'static' }}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <button type="button" className="close-btn" onClick={onClose} style={{ position: 'static' }}>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
                             </svg>

@@ -17,7 +17,7 @@ export default function CollectionPage({ params }) {
 
     const [documents, setDocuments] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+    const [_error, setError] = useState('');
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(20);
     const [totalCount, setTotalCount] = useState(0);
@@ -47,7 +47,7 @@ export default function CollectionPage({ params }) {
             // If no param but doc is selected, close it (handle back button)
             if (selectedDoc) setSelectedDoc(null);
         }
-    }, [searchParams, dbName, colName]); // Removed selectedDoc from deps to avoid loop
+    }, [searchParams, dbName, colName, selectedDoc._id, selectedDoc]); // Removed selectedDoc from deps to avoid loop
 
     const handleViewJson = (doc) => {
         setSelectedDoc(doc);
@@ -138,7 +138,7 @@ export default function CollectionPage({ params }) {
                             content = JSON.stringify(doc, null, 2);
                         } else {
                             const keys = Object.keys(doc);
-                            content = keys.join(',') + '\n' + keys.map(k => JSON.stringify(doc[k])).join(',');
+                            content = `${keys.join(',')}\n${keys.map(k => JSON.stringify(doc[k])).join(',')}`;
                         }
                         zipFolder.file(fileName, content);
                     });
@@ -153,7 +153,7 @@ export default function CollectionPage({ params }) {
                 window.URL.revokeObjectURL(url);
             }
         } catch (err) {
-            alert('Export failed: ' + err.message);
+            alert(`Export failed: ${err.message}`);
         } finally {
             setIsExporting(false);
         }

@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import './CollectionTable.css';
 
 export default function CollectionTable({ documents, columns, sort, onSort, onViewJson }) {
@@ -20,8 +19,8 @@ export default function CollectionTable({ documents, columns, sort, onSort, onVi
                                     {col}
                                     {sort.field === col && (
                                         sort.dir === 'asc'
-                                            ? <svg width="8" height="4" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ transform: 'rotate(180deg)' }}><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                            : <svg width="8" height="4" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                            ? <svg aria-hidden="true" width="8" height="4" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ transform: 'rotate(180deg)' }}><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                            : <svg aria-hidden="true" width="8" height="4" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                     )}
                                 </div>
                             </th>
@@ -32,12 +31,12 @@ export default function CollectionTable({ documents, columns, sort, onSort, onVi
                     {documents.map((doc, idx) => (
                         <tr key={doc._id || idx}>
                             <td className="sticky-col" style={{ textAlign: 'center' }}>
-                                <button
+                                <button type="button"
                                     className="icon-btn"
                                     onClick={() => onViewJson(doc)}
                                     title="View Full Record"
                                 >
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                         <circle cx="12" cy="12" r="3"></circle>
                                     </svg>
@@ -52,7 +51,7 @@ export default function CollectionTable({ documents, columns, sort, onSort, onVi
                                 return (
                                     <td key={col}>
                                         {isComplex ? (
-                                            <button className="view-json-btn" onClick={() => onViewJson(val)}>
+                                            <button type="button" className="view-json-btn" onClick={() => onViewJson(val)}>
                                                 {Array.isArray(val) ? '[ ]' : '{ }'}
                                             </button>
                                         ) : (
