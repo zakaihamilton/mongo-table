@@ -1,98 +1,162 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import './Pagination.css';
+import { useEffect, useState } from "react";
+import "./Pagination.css";
 
 export default function Pagination({ page, limit, totalCount, onPageChange, onLimitChange }) {
-    const [inputPage, setInputPage] = useState(page);
+  const [inputPage, setInputPage] = useState(page);
 
-    useEffect(() => {
-        setInputPage(page);
-    }, [page]);
+  useEffect(() => {
+    setInputPage(page);
+  }, [page]);
 
-    const maxPage = Math.ceil(totalCount / limit) || 1;
+  const maxPage = Math.ceil(totalCount / limit) || 1;
 
-    const handlePageSubmit = (e) => {
-        e.preventDefault();
-        const p = parseInt(inputPage, 10);
-        if (p >= 1 && p <= maxPage) {
-            onPageChange(p);
-        } else {
-            setInputPage(page); // Reset if invalid
-        }
-    };
+  const handlePageSubmit = (e) => {
+    e.preventDefault();
+    const p = parseInt(inputPage, 10);
+    if (p >= 1 && p <= maxPage) {
+      onPageChange(p);
+    } else {
+      setInputPage(page); // Reset if invalid
+    }
+  };
 
-    return (
-        <div className="pagination-footer">
-            <div className="pagination-controls">
-                <span className="pagination-label">Rows:</span>
-                <select
-                    value={limit}
-                    onChange={(e) => onLimitChange(Number(e.target.value))}
-                    className="pagination-select"
-                >
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
-                    <option value={50}>50</option>
-                    <option value={100}>100</option>
-                </select>
-            </div>
+  return (
+    <div className="pagination-footer">
+      <div className="pagination-controls">
+        <span className="pagination-label">Rows:</span>
+        <select
+          value={limit}
+          onChange={(e) => onLimitChange(Number(e.target.value))}
+          className="pagination-select"
+        >
+          <option value={10}>10</option>
+          <option value={20}>20</option>
+          <option value={50}>50</option>
+          <option value={100}>100</option>
+        </select>
+      </div>
 
-            <div className="pagination-info">
-                <span className="pagination-range">
-                    {totalCount === 0 ? '0-0 of 0' : `${(page - 1) * limit + 1}-${Math.min(page * limit, totalCount)} of ${totalCount}`}
-                </span>
+      <div className="pagination-info">
+        <span className="pagination-range">
+          {totalCount === 0
+            ? "0-0 of 0"
+            : `${(page - 1) * limit + 1}-${Math.min(page * limit, totalCount)} of ${totalCount}`}
+        </span>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                    <button type="button"
-                        className="pagination-btn"
-                        disabled={page <= 1}
-                        onClick={() => onPageChange(1)}
-                        title="First Page"
-                    >
-                        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="11 17 6 12 11 7"></polyline><polyline points="18 17 13 12 18 7"></polyline></svg>
-                    </button>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+          <button
+            type="button"
+            className="pagination-btn"
+            disabled={page <= 1}
+            onClick={() => onPageChange(1)}
+            title="First Page"
+          >
+            <svg
+              aria-hidden="true"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="11 17 6 12 11 7"></polyline>
+              <polyline points="18 17 13 12 18 7"></polyline>
+            </svg>
+          </button>
 
-                    <button type="button"
-                        className="pagination-btn"
-                        disabled={page <= 1}
-                        onClick={() => onPageChange(page - 1)}
-                        title="Previous Page"
-                    >
-                        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    </button>
+          <button
+            type="button"
+            className="pagination-btn"
+            disabled={page <= 1}
+            onClick={() => onPageChange(page - 1)}
+            title="Previous Page"
+          >
+            <svg
+              aria-hidden="true"
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 12L6 8L10 4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
 
-                    <form onSubmit={handlePageSubmit} className="pagination-input-form">
-                        <input
-                            className="pagination-input"
-                            type="number"
-                            value={inputPage}
-                            onChange={(e) => setInputPage(e.target.value)}
-                            min={1}
-                            max={maxPage}
-                        />
-                        <span style={{ marginLeft: '0.5rem', color: 'var(--text-secondary)' }}>/ {maxPage}</span>
-                    </form>
+          <form onSubmit={handlePageSubmit} className="pagination-input-form">
+            <input
+              className="pagination-input"
+              type="number"
+              value={inputPage}
+              onChange={(e) => setInputPage(e.target.value)}
+              min={1}
+              max={maxPage}
+            />
+            <span style={{ marginLeft: "0.5rem", color: "var(--text-secondary)" }}>
+              / {maxPage}
+            </span>
+          </form>
 
-                    <button type="button"
-                        className="pagination-btn"
-                        disabled={page >= maxPage}
-                        onClick={() => onPageChange(page + 1)}
-                        title="Next Page"
-                    >
-                        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    </button>
+          <button
+            type="button"
+            className="pagination-btn"
+            disabled={page >= maxPage}
+            onClick={() => onPageChange(page + 1)}
+            title="Next Page"
+          >
+            <svg
+              aria-hidden="true"
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 12L10 8L6 4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
 
-                    <button type="button"
-                        className="pagination-btn"
-                        disabled={page >= maxPage}
-                        onClick={() => onPageChange(maxPage)}
-                        title="Last Page"
-                    >
-                        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg>
-                    </button>
-                </div>
-            </div>
+          <button
+            type="button"
+            className="pagination-btn"
+            disabled={page >= maxPage}
+            onClick={() => onPageChange(maxPage)}
+            title="Last Page"
+          >
+            <svg
+              aria-hidden="true"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="13 17 18 12 13 7"></polyline>
+              <polyline points="6 17 11 12 6 7"></polyline>
+            </svg>
+          </button>
         </div>
-    );
+      </div>
+    </div>
+  );
 }

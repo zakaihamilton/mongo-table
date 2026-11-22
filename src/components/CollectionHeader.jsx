@@ -1,89 +1,127 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
-import './CollectionHeader.css';
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import "./CollectionHeader.css";
 
-export default function CollectionHeader({ dbName, colName, searchInput, onSearchChange, onExport, isExporting }) {
-    const [showExportMenu, setShowExportMenu] = useState(false);
-    const [connName, setConnName] = useState('');
-    const exportMenuRef = useRef(null);
+export default function CollectionHeader({
+  dbName,
+  colName,
+  searchInput,
+  onSearchChange,
+  onExport,
+  isExporting,
+}) {
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [connName, setConnName] = useState("");
+  const exportMenuRef = useRef(null);
 
-    useEffect(() => {
-        // Load connection name
-        const activeUri = localStorage.getItem('active_connection');
-        const connections = JSON.parse(localStorage.getItem('mongo_connections') || '[]');
-        const activeConn = connections.find(c => c.uri === activeUri);
-        if (activeConn) {
-            setConnName(activeConn.name);
-        }
+  useEffect(() => {
+    // Load connection name
+    const activeUri = localStorage.getItem("active_connection");
+    const connections = JSON.parse(localStorage.getItem("mongo_connections") || "[]");
+    const activeConn = connections.find((c) => c.uri === activeUri);
+    if (activeConn) {
+      setConnName(activeConn.name);
+    }
 
-        const handleClickOutside = (event) => {
-            if (exportMenuRef.current && !exportMenuRef.current.contains(event.target)) {
-                setShowExportMenu(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    const handleExportClick = (format) => {
+    const handleClickOutside = (event) => {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(event.target)) {
         setShowExportMenu(false);
-        onExport(format);
+      }
     };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-    return (
-        <div className="header">
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem', overflow: 'hidden' }}>
-                <div className="breadcrumbs">
-                    {connName && (
-                        <>
-                            <Link href="/">{connName}</Link>
-                            <span className="breadcrumbs-separator">/</span>
-                        </>
-                    )}
-                    <Link href={`/databases/${dbName}`}>{dbName}</Link>
-                    <span className="breadcrumbs-separator">/</span>
-                    <span className="current-col">{colName}</span>
-                </div>
-            </div>
+  const handleExportClick = (format) => {
+    setShowExportMenu(false);
+    onExport(format);
+  };
 
-            <div className="search-container">
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    value={searchInput}
-                    onChange={(e) => onSearchChange(e.target.value)}
-                    className="header-search-input"
-                />
-            </div>
-
-            <div className="export-container" ref={exportMenuRef}>
-                <button type="button"
-                    className="export-btn"
-                    onClick={() => setShowExportMenu(!showExportMenu)}
-                    disabled={isExporting}
-                >
-                    {isExporting ? 'Exporting...' : 'Export'}
-                    <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: showExportMenu ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                </button>
-
-                {showExportMenu && (
-                    <div className="export-menu">
-                        <button type="button" className="export-item" onClick={() => handleExportClick('json-single')}>
-                            JSON (Single File)
-                        </button>
-                        <button type="button" className="export-item" onClick={() => handleExportClick('json-zip')}>
-                            JSON (Zip)
-                        </button>
-                        <button type="button" className="export-item" onClick={() => handleExportClick('csv')}>
-                            CSV
-                        </button>
-                    </div>
-                )}
-            </div>
+  return (
+    <div className="header">
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+          overflow: "hidden",
+        }}
+      >
+        <div className="breadcrumbs">
+          {connName && (
+            <>
+              <Link href="/">{connName}</Link>
+              <span className="breadcrumbs-separator">/</span>
+            </>
+          )}
+          <Link href={`/databases/${dbName}`}>{dbName}</Link>
+          <span className="breadcrumbs-separator">/</span>
+          <span className="current-col">{colName}</span>
         </div>
-    );
+      </div>
+
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchInput}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="header-search-input"
+        />
+      </div>
+
+      <div className="export-container" ref={exportMenuRef}>
+        <button
+          type="button"
+          className="export-btn"
+          onClick={() => setShowExportMenu(!showExportMenu)}
+          disabled={isExporting}
+        >
+          {isExporting ? "Exporting..." : "Export"}
+          <svg
+            aria-hidden="true"
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{
+              transform: showExportMenu ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.2s",
+            }}
+          >
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        {showExportMenu && (
+          <div className="export-menu">
+            <button
+              type="button"
+              className="export-item"
+              onClick={() => handleExportClick("json-single")}
+            >
+              JSON (Single File)
+            </button>
+            <button
+              type="button"
+              className="export-item"
+              onClick={() => handleExportClick("json-zip")}
+            >
+              JSON (Zip)
+            </button>
+            <button type="button" className="export-item" onClick={() => handleExportClick("csv")}>
+              CSV
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
