@@ -4,15 +4,17 @@ import { MongoClient, ObjectId } from "mongodb";
 
 // Helper to serialize documents (convert ObjectId to string, etc)
 function serializeDocument(doc) {
-  return JSON.parse(JSON.stringify(doc, (_key, value) => {
-    return value;
-  }));
+  return JSON.parse(
+    JSON.stringify(doc, (_key, value) => {
+      return value;
+    }),
+  );
 }
 
 // Better serializer that specifically targets MongoDB types if possible,
 // but JSON.parse(JSON.stringify()) is the robust 'dumb' way to strip methods.
 function cleanDocs(docs) {
-  return docs.map(doc => {
+  return docs.map((doc) => {
     // Convert _id to string manually to be nice
     const newDoc = { ...doc };
     if (newDoc._id) {
@@ -57,7 +59,7 @@ export async function listCollections(uri, dbName) {
     await client.connect();
     const db = client.db(dbName);
     const collections = await db.listCollections().toArray();
-    return { collections: collections.map(c => ({ name: c.name })) };
+    return { collections: collections.map((c) => ({ name: c.name })) };
   } catch (error) {
     throw new Error(error.message);
   } finally {
@@ -72,9 +74,9 @@ export async function getDocuments(
   page = 1,
   limit = 20,
   sortField,
-  sortDir = 'asc',
+  sortDir = "asc",
   searchQuery,
-  filter = {}
+  filter = {},
 ) {
   let client;
   try {
@@ -95,8 +97,8 @@ export async function getDocuments(
       if (sample) {
         const orClauses = [];
         for (const key in sample) {
-          if (typeof sample[key] === 'string') {
-            orClauses.push({ [key]: { $regex: searchQuery, $options: 'i' } });
+          if (typeof sample[key] === "string") {
+            orClauses.push({ [key]: { $regex: searchQuery, $options: "i" } });
           }
         }
         if (orClauses.length > 0) {
@@ -112,7 +114,7 @@ export async function getDocuments(
     // Sort
     const sortOptions = {};
     if (sortField) {
-      sortOptions[sortField] = sortDir === 'asc' ? 1 : -1;
+      sortOptions[sortField] = sortDir === "asc" ? 1 : -1;
     } else {
       sortOptions._id = -1; // Default new first
     }
@@ -124,7 +126,7 @@ export async function getDocuments(
       documents: cleanDocs(docs),
       totalCount,
       page,
-      limit
+      limit,
     };
   } catch (error) {
     throw new Error(error.message);
@@ -190,7 +192,7 @@ export async function getDistinctValues(uri, dbName, colName, field) {
 
     const values = await collection.distinct(field);
     // Filter to only string values for folder structure
-    return values.filter(v => typeof v === 'string').sort();
+    return values.filter((v) => typeof v === "string").sort();
   } catch (error) {
     throw new Error(error.message);
   } finally {
